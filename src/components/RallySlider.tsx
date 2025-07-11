@@ -36,8 +36,7 @@ export default function RallySlider() {
   React.useEffect(() => {
     async function fetchRallies() {
       try {
-        const year = new Date().getFullYear();
-        const response = await fetch(`https://www.rallylive.net/mobileapp/v1/json-ralliler.php?sezon=${year}&sort=DESC&live=1`);
+        const response = await fetch(`https://www.rallylive.net/mobileapp/v1/json-rally-results.php?live=1`);
         if (!response.ok) {
             throw new Error('Failed to fetch rallies');
         }
@@ -125,7 +124,7 @@ export default function RallySlider() {
       return (
           <div className="w-full max-w-5xl mx-auto p-1 text-center">
               <Card className="p-10">
-                  <p className="text-lg text-muted-foreground">No live rallies found for the current season.</p>
+                  <p className="text-lg text-muted-foreground">No live rallies found.</p>
               </Card>
           </div>
       )
@@ -219,4 +218,3 @@ export default function RallySlider() {
     </Carousel>
   );
 }
-
