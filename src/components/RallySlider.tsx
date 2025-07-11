@@ -43,7 +43,7 @@ export default function RallySlider() {
         const data: RallyFromApi[] = await response.json();
         
         const mappedRallies: Rally[] = data.map(rally => ({
-            id: rally.id.toString(),
+            id: String(rally.id),
             name: rally.name,
             image: rally.logo,
             imageHint: 'rally car action',
