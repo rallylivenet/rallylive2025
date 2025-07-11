@@ -11,3 +11,9 @@ export interface Rally {
   };
   keyMoment: string;
 }
+
+export interface RallyFromApi {
+  id: string;
+  rally_name: string;
+  rally_logo: string;
+}
