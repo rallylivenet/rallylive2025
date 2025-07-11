@@ -36,16 +36,16 @@ export default function RallySlider() {
   React.useEffect(() => {
     async function fetchRallies() {
       try {
-        const response = await fetch(`https://www.rallylive.net/mobileapp/v1/json-rally-results.php?live=1`);
+        const response = await fetch(`https://www.rallylive.net/wp-json/rally/v1/live-results?limit=10`);
         if (!response.ok) {
             throw new Error('Failed to fetch rallies');
         }
         const data: RallyFromApi[] = await response.json();
         
         const mappedRallies: Rally[] = data.map(rally => ({
-            id: rally.id,
-            name: rally.rally_name,
-            image: rally.rally_logo,
+            id: rally.id.toString(),
+            name: rally.name,
+            image: rally.logo,
             imageHint: 'rally car action',
             // Mocking this data as it's not in the API response
             lastStage: {
