@@ -14,7 +14,7 @@ import {
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Clock, Route, Zap } from 'lucide-react';
-import type { Rally, RallyFromApi } from '@/lib/types';
+import type { Rally, RallyFromApi, LastStageFromApi } from '@/lib/types';
 import { getRallyUpdate } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
@@ -42,20 +42,45 @@ export default function RallySlider() {
         }
         const data: RallyFromApi[] = await response.json();
         
-        const mappedRallies: Rally[] = data.map(rally => ({
-            id: rally.ID,
-            name: rally.title,
-            image: rally.thumbnail,
-            imageHint: 'rally car action',
-            // Mocking this data as it's not in the API response
-            lastStage: {
-                name: 'SS1 Special Stage',
-                distance: '15.00 km',
+        const mappedRallies = await Promise.all(data.map(async (rally) => {
+            let lastStageData: Rally['lastStage'] = {
+                name: 'TBA',
+                distance: 'TBA',
                 winner: 'TBA',
                 leader: 'TBA',
-            },
-            keyMoment: 'The rally is about to start! Get ready for the action.',
+            };
+            let keyMoment = 'The rally is about to start! Get ready for the action.';
+
+            if(rally.rid) {
+                try {
+                    const stageResponse = await fetch(`https://www.rallylive.net/mobileapp/v1/json-sonetap.php?rid=${rally.rid}`);
+                    if (stageResponse.ok) {
+                        const stageData: LastStageFromApi = await stageResponse.json();
+                        if (stageData && stageData.etap_adi) {
+                            lastStageData = {
+                                name: stageData.etap_adi,
+                                distance: `${stageData.etap_uzunluk} km`,
+                                winner: stageData.etap_birincisi_isim || 'TBA',
+                                leader: stageData.genel_klasman_birincisi_isim || 'TBA',
+                            };
+                            keyMoment = `${stageData.etap_birincisi_isim} is leading ${stageData.etap_adi}!`;
+                        }
+                    }
+                } catch (e) {
+                    console.error(`Failed to fetch stage data for rally ${rally.rid}`, e);
+                }
+            }
+
+            return {
+                id: rally.ID,
+                name: rally.title,
+                image: rally.thumbnail,
+                imageHint: 'rally car action',
+                lastStage: lastStageData,
+                keyMoment: keyMoment,
+            };
         }));
+
         setRallies(mappedRallies);
       } catch (error) {
         console.error("Failed to fetch rallies:", error);

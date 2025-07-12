@@ -16,4 +16,15 @@ export interface RallyFromApi {
   ID: string;
   title: string;
   thumbnail: string;
+  rid: string;
+}
+
+export interface LastStageFromApi {
+    etap_no: string;
+    etap_adi: string;
+    etap_uzunluk: string;
+    etap_birincisi_isim: string;
+    etap_birincisi_zaman: string;
+    genel_klasman_birincisi_isim: string;
+    genel_klasman_birincisi_zaman: string;
 }
