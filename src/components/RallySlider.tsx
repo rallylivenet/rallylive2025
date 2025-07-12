@@ -47,7 +47,7 @@ export default function RallySlider() {
                 leader: 'TBA',
             };
 
-            if(rally.rid) {
+            if(rally.rid && rally.rid.trim() !== '') {
                 try {
                     const [stageResponse, itineraryResponse] = await Promise.all([
                         fetch(`https://www.rallylive.net/mobileapp/v1/json-sonetap.php?rid=${rally.rid}`),
@@ -75,7 +75,7 @@ export default function RallySlider() {
             }
 
             return {
-                id: rally.ID,
+                id: rally.ID.toString(),
                 name: rally.title,
                 image: rally.thumbnail,
                 imageHint: 'rally car action',
