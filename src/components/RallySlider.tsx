@@ -43,9 +43,9 @@ export default function RallySlider() {
         const data: RallyFromApi[] = await response.json();
         
         const mappedRallies: Rally[] = data.map(rally => ({
-            id: String(rally.id),
-            name: rally.name,
-            image: rally.logo,
+            id: rally.ID,
+            name: rally.title,
+            image: rally.thumbnail,
             imageHint: 'rally car action',
             // Mocking this data as it's not in the API response
             lastStage: {
@@ -152,6 +152,7 @@ export default function RallySlider() {
                       className="object-cover"
                       data-ai-hint={rally.imageHint}
                       priority={rallies.indexOf(rally) === 0}
+                      unoptimized // Added because the image source is external and we don't have control over it
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
                     <div className="absolute bottom-0 left-0 p-6">

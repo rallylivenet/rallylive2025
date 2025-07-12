@@ -13,7 +13,7 @@ export interface Rally {
 }
 
 export interface RallyFromApi {
-  id: number;
-  name: string;
-  logo: string;
+  ID: string;
+  title: string;
+  thumbnail: string;
 }
