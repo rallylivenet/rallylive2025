@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/carousel';
 import { Card, CardContent } from '@/components/ui/card';
 import { Clock, Route } from 'lucide-react';
-import type { Rally, RallyFromApi, LastStageFromApi } from '@/lib/types';
+import type { Rally, RallyFromApi, LastStageFromApi, ItineraryItem } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from './ui/skeleton';
@@ -46,25 +46,31 @@ export default function RallySlider() {
                 winner: 'TBA',
                 leader: 'TBA',
             };
-            let keyMoment = 'The rally is about to start! Get ready for the action.';
 
             if(rally.rid) {
                 try {
-                    const stageResponse = await fetch(`https://www.rallylive.net/mobileapp/v1/json-sonetap.php?rid=${rally.rid}`);
-                    if (stageResponse.ok) {
+                    const [stageResponse, itineraryResponse] = await Promise.all([
+                        fetch(`https://www.rallylive.net/mobileapp/v1/json-sonetap.php?rid=${rally.rid}`),
+                        fetch(`https://www.rallylive.net/mobileapp/v1/rally-itinerary.php?rid=${rally.rid}`)
+                    ]);
+
+                    if (stageResponse.ok && itineraryResponse.ok) {
                         const stageData: LastStageFromApi = await stageResponse.json();
-                        if (stageData && stageData.etap_adi) {
+                        const itineraryData: ItineraryItem[] = await itineraryResponse.json();
+
+                        if (stageData && stageData.etap_no) {
+                            const currentStageInfo = itineraryData.find(item => item.no === stageData.etap_no);
+                            
                             lastStageData = {
-                                name: stageData.etap_adi,
-                                distance: `${stageData.etap_uzunluk} km`,
+                                name: currentStageInfo?.name || stageData.etap_adi || 'TBA',
+                                distance: `${currentStageInfo?.km || stageData.etap_uzunluk || '0.00'} km`,
                                 winner: stageData.etap_birincisi_isim || 'TBA',
                                 leader: stageData.genel_klasman_birincisi_isim || 'TBA',
                             };
-                            keyMoment = `${stageData.etap_birincisi_isim} is leading ${stageData.etap_adi}!`;
                         }
                     }
                 } catch (e) {
-                    console.error(`Failed to fetch stage data for rally ${rally.rid}`, e);
+                    console.error(`Failed to fetch stage or itinerary data for rally ${rally.rid}`, e);
                 }
             }
 
@@ -74,7 +80,6 @@ export default function RallySlider() {
                 image: rally.thumbnail,
                 imageHint: 'rally car action',
                 lastStage: lastStageData,
-                keyMoment: keyMoment,
             };
         }));
 
@@ -131,7 +136,7 @@ export default function RallySlider() {
       className="w-full max-w-5xl mx-auto"
     >
       <CarouselContent>
-        {rallies.map((rally) => (
+        {rallies.map((rally, index) => (
           <CarouselItem key={rally.id}>
             <div className="p-1">
               <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 border-2">
@@ -143,7 +148,7 @@ export default function RallySlider() {
                       fill
                       className="object-cover"
                       data-ai-hint={rally.imageHint}
-                      priority={rallies.indexOf(rally) === 0}
+                      priority={index === 0}
                       unoptimized // Added because the image source is external and we don't have control over it
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
