@@ -12,10 +12,8 @@ import {
   CarouselPrevious,
 } from '@/components/ui/carousel';
 import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Clock, Route, Zap } from 'lucide-react';
+import { Clock, Route } from 'lucide-react';
 import type { Rally, RallyFromApi, LastStageFromApi } from '@/lib/types';
-import { getRallyUpdate } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from './ui/skeleton';
@@ -30,7 +28,6 @@ const CheckeredFlagIcon = (props: React.SVGProps<SVGSVGElement>) => (
 export default function RallySlider() {
   const [rallies, setRallies] = React.useState<Rally[]>([]);
   const [loading, setLoading] = React.useState(true);
-  const [updates, setUpdates] = React.useState<Record<string, { loading: boolean; text: string | null }>>({});
   const { toast } = useToast();
 
   React.useEffect(() => {
@@ -96,48 +93,18 @@ export default function RallySlider() {
     fetchRallies();
   }, [toast]);
 
-  const handleGenerateUpdate = async (rally: Rally) => {
-    setUpdates(prev => ({ ...prev, [rally.id]: { loading: true, text: null } }));
-    
-    const stageResults = `Winner: ${rally.lastStage.winner}, Distance: ${rally.lastStage.distance}`;
-    
-    const result = await getRallyUpdate({
-      rallyName: rally.name,
-      stageName: rally.lastStage.name,
-      stageResults,
-      leader: rally.lastStage.leader,
-      keyMoment: rally.keyMoment,
-    });
-    
-    if (result.success) {
-      setUpdates(prev => ({ ...prev, [rally.id]: { loading: false, text: result.update } }));
-    } else {
-      setUpdates(prev => ({ ...prev, [rally.id]: { loading: false, text: null } }));
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: result.error,
-      });
-    }
-  };
 
   if (loading) {
     return (
         <div className="w-full max-w-5xl mx-auto p-1">
             <Card className="overflow-hidden shadow-lg border-2">
                 <Skeleton className="relative aspect-[720/380] w-full" />
-                <CardContent className="p-6 grid md:grid-cols-5 gap-6">
-                    <div className="md:col-span-2 space-y-4">
+                <CardContent className="p-6">
+                    <div className="space-y-4">
                         <Skeleton className="h-6 w-3/4" />
                         <Skeleton className="h-5 w-5/6" />
                         <Skeleton className="h-5 w-5/6" />
                         <Skeleton className="h-5 w-5/6" />
-                    </div>
-                    <div className="md:col-span-3 bg-muted p-4 rounded-lg flex flex-col gap-4">
-                         <Skeleton className="h-6 w-1/2" />
-                         <Skeleton className="h-4 w-full" />
-                         <Skeleton className="h-4 w-5/6" />
-                         <Skeleton className="h-11 w-full" />
                     </div>
                 </CardContent>
             </Card>
@@ -186,8 +153,8 @@ export default function RallySlider() {
                   </Link>
                   <Badge variant="destructive" className="absolute top-4 right-4 text-base shadow-lg">LIVE</Badge>
                 </div>
-                <CardContent className="p-6 grid md:grid-cols-5 gap-6">
-                  <div className="md:col-span-2">
+                <CardContent className="p-6">
+                  <div>
                     <h4 className="font-bold font-headline text-xl mb-4">Latest Stage: {rally.lastStage.name}</h4>
                     <ul className="space-y-3">
                       <li className="flex items-center">
@@ -203,31 +170,6 @@ export default function RallySlider() {
                         <span>Overall Leader: <span className="font-semibold text-accent">{rally.lastStage.leader}</span></span>
                       </li>
                     </ul>
-                  </div>
-                  <div className="md:col-span-3 bg-muted p-4 rounded-lg flex flex-col">
-                    <h4 className="font-bold font-headline text-xl mb-4">AI Rally Update</h4>
-                    <div className="flex-grow">
-                      {updates[rally.id]?.loading ? (
-                        <div className="space-y-2 pt-1">
-                          <Skeleton className="h-4 w-full" />
-                          <Skeleton className="h-4 w-5/6" />
-                          <Skeleton className="h-4 w-4/6" />
-                        </div>
-                      ) : updates[rally.id]?.text ? (
-                        <p className="text-sm text-muted-foreground italic leading-relaxed">"{updates[rally.id]?.text}"</p>
-                      ) : (
-                        <p className="text-sm text-muted-foreground">{rally.keyMoment}</p>
-                      )}
-                    </div>
-                     <Button
-                      onClick={() => handleGenerateUpdate(rally)}
-                      disabled={updates[rally.id]?.loading}
-                      className="mt-4 w-full"
-                      size="lg"
-                    >
-                      <Zap className="mr-2 h-4 w-4" />
-                      {updates[rally.id]?.loading ? 'Generating...' : 'Generate Update'}
-                    </Button>
                   </div>
                 </CardContent>
               </Card>
