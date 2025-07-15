@@ -54,20 +54,31 @@ export default function RallySlider() {
                         fetch(`https://www.rallylive.net/mobileapp/v1/rally-itinerary.php?rid=${rally.rid}`)
                     ]);
 
-                    if (stageResponse.ok && itineraryResponse.ok) {
-                        const stageData: LastStageFromApi = await stageResponse.json();
-                        const itineraryData: ItineraryItem[] = await itineraryResponse.json();
+                    let stageData: LastStageFromApi | null = null;
+                    if (stageResponse.ok) {
+                       const stageJson = await stageResponse.json();
+                       if (stageJson) {
+                           stageData = stageJson;
+                       }
+                    }
 
-                        if (stageData && stageData.etap_no) {
-                            const currentStageInfo = itineraryData.find(item => item.no === stageData.etap_no);
-                            
-                            lastStageData = {
-                                name: currentStageInfo?.name || stageData.etap_adi || 'TBA',
-                                distance: `${currentStageInfo?.km || stageData.etap_uzunluk || '0.00'} km`,
-                                winner: stageData.etap_birincisi_isim || 'TBA',
-                                leader: stageData.genel_klasman_birincisi_isim || 'TBA',
-                            };
+                    let itineraryData: ItineraryItem[] = [];
+                    if(itineraryResponse.ok) {
+                        const itineraryJson = await itineraryResponse.json();
+                        if (Array.isArray(itineraryJson)) {
+                            itineraryData = itineraryJson;
                         }
+                    }
+
+                    if (stageData && stageData.etap_no) {
+                        const currentStageInfo = itineraryData.find(item => item.no === stageData?.etap_no);
+                        
+                        lastStageData = {
+                            name: currentStageInfo?.name || stageData.etap_adi || 'TBA',
+                            distance: `${currentStageInfo?.km || stageData.etap_uzunluk || '0.00'} km`,
+                            winner: stageData.etap_birincisi_isim || 'TBA',
+                            leader: stageData.genel_klasman_birincisi_isim || 'TBA',
+                        };
                     }
                 } catch (e) {
                     console.error(`Failed to fetch stage or itinerary data for rally ${rally.rid}`, e);
@@ -143,7 +154,7 @@ export default function RallySlider() {
                 <div className="relative aspect-[720/380]">
                   <Link href={`#`} aria-label={`View details for ${rally.name}`}>
                     <Image
-                      src={rally.image}
+                      src={rally.image || 'https://placehold.co/720x380.png'}
                       alt={rally.name}
                       fill
                       className="object-cover"
