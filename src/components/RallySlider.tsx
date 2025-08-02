@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/carousel';
 import { Card, CardContent } from '@/components/ui/card';
 import { Clock, Route } from 'lucide-react';
-import type { Rally, RallyFromApi, LastStageFromApi, ItineraryItem, StageWinnerInfo } from '@/lib/types';
+import type { Rally, RallyFromApi, LastStageFromApi, StageWinnerInfo } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from './ui/skeleton';
@@ -72,7 +72,7 @@ export default function RallySlider() {
 
                     if (stageData) {
                         lastStageData = {
-                            name: stageData.name || 'TBA',
+                            name: `SS${stageData.sonEtap} ${stageData.name}` || 'TBA',
                             distance: `${stageData.km || '0.00'} km`,
                             winner: stageWinnerData?.etap_birincisi_isim || 'TBA',
                             leader: stageWinnerData?.genel_klasman_birincisi_isim || 'TBA',
