@@ -19,13 +19,16 @@ export interface RallyFromApi {
 }
 
 export interface LastStageFromApi {
-    etap_no: string;
-    etap_adi: string | null;
-    etap_uzunluk: string;
+    sonEtap: string;
+    name: string;
+    zaman: string;
+    km: string;
+    tarih: string;
+}
+
+export interface StageWinnerInfo {
     etap_birincisi_isim: string;
-    etap_birincisi_zaman: string;
     genel_klasman_birincisi_isim: string;
-    genel_klasman_birincisi_zaman: string;
 }
 
 export interface ItineraryItem {

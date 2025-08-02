@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/carousel';
 import { Card, CardContent } from '@/components/ui/card';
 import { Clock, Route } from 'lucide-react';
-import type { Rally, RallyFromApi, LastStageFromApi, ItineraryItem } from '@/lib/types';
+import type { Rally, RallyFromApi, LastStageFromApi, ItineraryItem, StageWinnerInfo } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from './ui/skeleton';
@@ -49,9 +49,9 @@ export default function RallySlider() {
 
             if(rally.rid && rally.rid.trim() !== '') {
                 try {
-                    const [stageResponse, itineraryResponse] = await Promise.all([
+                    const [stageResponse, stageWinnerResponse] = await Promise.all([
                         fetch(`https://www.rallylive.net/mobileapp/v1/json-sonetap.php?rid=${rally.rid}`),
-                        fetch(`https://www.rallylive.net/mobileapp/v1/rally-itinerary.php?rid=${rally.rid}`)
+                        fetch(`https://www.rallylive.net/mobileapp/v1/json-sonetap.php?rid=${rally.rid}`)
                     ]);
 
                     let stageData: LastStageFromApi | null = null;
@@ -61,23 +61,21 @@ export default function RallySlider() {
                            stageData = stageJson;
                        }
                     }
-
-                    let itineraryData: ItineraryItem[] = [];
-                    if(itineraryResponse.ok) {
-                        const itineraryJson = await itineraryResponse.json();
-                        if (Array.isArray(itineraryJson)) {
-                            itineraryData = itineraryJson;
-                        }
+                    
+                    let stageWinnerData: StageWinnerInfo | null = null;
+                     if (stageWinnerResponse.ok) {
+                       const stageWinnerJson = await stageWinnerResponse.json();
+                       if (stageWinnerJson) {
+                           stageWinnerData = stageWinnerJson;
+                       }
                     }
 
-                    if (stageData && stageData.etap_no) {
-                        const currentStageInfo = itineraryData.find(item => item.no === stageData?.etap_no);
-                        
+                    if (stageData) {
                         lastStageData = {
-                            name: currentStageInfo?.name || stageData.etap_adi || 'TBA',
-                            distance: `${currentStageInfo?.km || stageData.etap_uzunluk || '0.00'} km`,
-                            winner: stageData.etap_birincisi_isim || 'TBA',
-                            leader: stageData.genel_klasman_birincisi_isim || 'TBA',
+                            name: stageData.name || 'TBA',
+                            distance: `${stageData.km || '0.00'} km`,
+                            winner: stageWinnerData?.etap_birincisi_isim || 'TBA',
+                            leader: stageWinnerData?.genel_klasman_birincisi_isim || 'TBA',
                         };
                     }
                 } catch (e) {
