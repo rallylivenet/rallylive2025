@@ -98,7 +98,7 @@ export default function RallySlider() {
                         lastStageData = {
                             name: `SS${stageData.sonEtap} ${stageName}`,
                             distance: `${stageData.km || '0.00'} km`,
-                            winner: stageWinnerData ? `${stageWinnerData.dname} ${stageWinnerData.dsurname}` : 'TBA',
+                            winner: stageWinnerData ? `${stageWinnerData.dname} ${stageWinnerData.dsurname} / ${stageWinnerData.cname} ${stageWinnerData.csurname}` : 'TBA',
                             leader: overallLeaderData?.genel_klasman_birincisi_isim || 'TBA',
                         };
                     }

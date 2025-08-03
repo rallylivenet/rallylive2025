@@ -31,6 +31,8 @@ export interface StageWinnerInfo {
     genel_klasman_birincisi_isim: string | null;
     dname: string;
     dsurname: string;
+    cname: string;
+    csurname: string;
 }
 
 export interface ItineraryItem {
