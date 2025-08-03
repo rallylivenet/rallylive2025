@@ -1,3 +1,4 @@
+
 export interface Rally {
   id: string;
   name: string;
@@ -56,3 +57,5 @@ export interface OverallLeaderFromApi {
     codriver_name: string;
     codriver_surname: string;
 }
+
+    
