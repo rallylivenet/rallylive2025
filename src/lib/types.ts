@@ -27,8 +27,6 @@ export interface LastStageFromApi {
 }
 
 export interface StageWinnerInfo {
-    etap_birincisi_isim: string | null;
-    genel_klasman_birincisi_isim: string | null;
     dname: string;
     dsurname: string;
     cname: string;
@@ -47,4 +45,12 @@ export interface ItineraryItem {
   mahalli: string;
   klasman: string;
   icon: string;
+}
+
+export interface OverallLeaderFromApi {
+    rank: number;
+    driver_name: string;
+    driver_surname: string;
+    codriver_name: string;
+    codriver_surname: string;
 }
