@@ -28,10 +28,6 @@ export default function Home() {
       </header>
       <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
         <section className="mb-12">
-          <h2 className="text-4xl font-bold font-headline text-center mb-2">Live Rallies</h2>
-          <p className="text-center text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Follow the action as it happens from stages around the world.
-          </p>
           <RallySlider />
         </section>
       </main>
