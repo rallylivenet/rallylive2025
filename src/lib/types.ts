@@ -10,6 +10,7 @@ export interface Rally {
     distance: string;
     winner: string;
     leader: string;
+    number: string;
   };
   date: string;
 }

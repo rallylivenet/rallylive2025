@@ -45,6 +45,7 @@ export default function RallySlider() {
                 distance: 'TBA',
                 winner: 'TBA',
                 leader: 'TBA',
+                number: '0',
             };
             let rallyDate: string | null = null;
 
@@ -94,6 +95,7 @@ export default function RallySlider() {
                             distance: `${stageData.km || '0.00'} km`,
                             winner: stageWinnerData ? `${stageWinnerData.dname} ${stageWinnerData.dsurname} / ${stageWinnerData.cname} ${stageWinnerData.csurname}` : 'TBA',
                             leader: leader ? `${leader.driver_name} ${leader.driver_surname} / ${leader.codriver_name} ${leader.codriver_surname}` : 'TBA',
+                            number: stageData.sonEtap || '0',
                         };
                     }
                 } catch (e) {
@@ -175,13 +177,16 @@ export default function RallySlider() {
           const rallyDate = new Date(rally.date);
           rallyDate.setHours(0, 0, 0, 0);
           const isOldRally = rallyDate < lastMonday;
+          const resultsLink = rally.lastStage.number !== '0' 
+            ? `/rally/${rally.id}/${rally.lastStage.number}` 
+            : `/rally/${rally.id}`;
 
           return (
             <CarouselItem key={rally.id}>
               <div className="p-1">
                 <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 border-2">
                   <div className="relative aspect-[720/380]">
-                    <Link href={`/rally/${rally.id}`} aria-label={`View details for ${rally.name}`}>
+                    <Link href={resultsLink} aria-label={`View details for ${rally.name}`}>
                       <Image
                         src={rally.image || 'https://placehold.co/720x380.png'}
                         alt={rally.name}

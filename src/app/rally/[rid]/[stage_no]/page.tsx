@@ -13,47 +13,33 @@ import {
 } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import type { StageResult, OverallResult, LastStageFromApi } from '@/lib/types';
+import type { StageResult, OverallResult } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-export default function RallyPage() {
+export default function RallyStagePage() {
   const params = useParams();
   const rid = params.rid as string;
+  const stage_no = params.stage_no as string;
   const { toast } = useToast();
 
   const [stageResults, setStageResults] = React.useState<StageResult[]>([]);
   const [overallResults, setOverallResults] = React.useState<OverallResult[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [stageName, setStageName] = React.useState('');
-  const [stageNumber, setStageNumber] = React.useState<string | null>(null);
 
   React.useEffect(() => {
-    if (!rid) return;
+    if (!rid || !stage_no) return;
 
     async function fetchData() {
       setLoading(true);
       try {
-        // 1. Fetch the last stage number
-        const lastStageResponse = await fetch(`https://www.rallylive.net/mobileapp/v1/json-sonetap.php?rid=${rid}`);
-        if (!lastStageResponse.ok) throw new Error('Failed to fetch last stage info');
-        const lastStageData: LastStageFromApi = await lastStageResponse.json();
-
-        if (!lastStageData || !lastStageData.sonEtap) {
-             throw new Error('No last stage data available');
-        }
-
-        const currentStageNumber = lastStageData.sonEtap;
-        setStageNumber(currentStageNumber);
-        setStageName(`SS${currentStageNumber} ${lastStageData.name}`);
-
-
-        // 2. Fetch stage and overall results in parallel
+        // Fetch stage and overall results in parallel
         const [stageResultsResponse, overallResultsResponse] = await Promise.all([
-          fetch(`https://www.rallylive.net/mobileapp/v1/json-stagetimes.php?rid=${rid}&stage_no=${currentStageNumber}`),
-          fetch(`https://www.rallylive.net/mobileapp/v1/json-overall.php?rid=${rid}&stage_no=${currentStageNumber}`),
+          fetch(`https://www.rallylive.net/mobileapp/v1/json-stagetimes.php?rid=${rid}&stage_no=${stage_no}`),
+          fetch(`https://www.rallylive.net/mobileapp/v1/json-overall.php?rid=${rid}&stage_no=${stage_no}`),
         ]);
 
         if (!stageResultsResponse.ok) throw new Error('Failed to fetch stage results');
@@ -61,6 +47,11 @@ export default function RallyPage() {
 
         const stageResultsData: StageResult[] = await stageResultsResponse.json();
         const overallResultsData: OverallResult[] = await overallResultsResponse.json();
+        
+        // This assumes we can get the stage name from a different source or construct it.
+        // For now, let's just use the stage number.
+        // A more robust solution might need another API call if the name isn't in these responses.
+        setStageName(`SS${stage_no}`);
 
         setStageResults(stageResultsData);
         setOverallResults(overallResultsData);
@@ -78,7 +69,7 @@ export default function RallyPage() {
     }
 
     fetchData();
-  }, [rid, toast]);
+  }, [rid, stage_no, toast]);
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
