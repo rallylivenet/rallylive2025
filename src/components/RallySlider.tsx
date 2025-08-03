@@ -49,10 +49,9 @@ export default function RallySlider() {
 
             if(rally.rid && rally.rid.trim() !== '') {
                 try {
-                    const [stageResponse, itineraryResponse, overallLeaderResponse] = await Promise.all([
+                    const [stageResponse, itineraryResponse] = await Promise.all([
                         fetch(`https://www.rallylive.net/mobileapp/v1/json-sonetap.php?rid=${rally.rid}`),
                         fetch(`https://www.rallylive.net/mobileapp/v1/rally-itinerary.php?rid=${rally.rid}`),
-                        fetch(`https://www.rallylive.net/mobileapp/v1/json-overall.php?rid=${rally.rid}`)
                     ]);
 
                     let stageData: LastStageFromApi | null = null;
@@ -72,10 +71,13 @@ export default function RallySlider() {
                     }
 
                     let overallLeaderData: OverallLeaderFromApi[] = [];
-                    if (overallLeaderResponse.ok) {
-                        const overallLeaderJson = await overallLeaderResponse.json();
-                        if(overallLeaderJson) {
-                            overallLeaderData = overallLeaderJson;
+                    if (stageData && stageData.sonEtap) {
+                        const overallLeaderResponse = await fetch(`https://www.rallylive.net/mobileapp/v1/json-overall.php?rid=${rally.rid}&stage_no=${stageData.sonEtap}`)
+                        if (overallLeaderResponse.ok) {
+                            const overallLeaderJson = await overallLeaderResponse.json();
+                            if(overallLeaderJson) {
+                                overallLeaderData = overallLeaderJson;
+                            }
                         }
                     }
                     
