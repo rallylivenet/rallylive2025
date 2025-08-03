@@ -126,14 +126,17 @@ const ResultsTable = ({ data, type }: { data: (StageResult[] | OverallResult[]),
             <TableRow key={index}>
                 <TableCell>
                   <div className="flex">
-                    <div className="w-10 flex-shrink-0">
+                    <div className="w-10 flex-shrink-0 text-center">
                       <div>{item.rank}</div>
                       <div className="text-sm text-muted-foreground">{item.door_no}</div>
                     </div>
                     <div>
-                      <div className="font-medium">{`${item.driver_name} ${item.driver_surname}`}</div>
-                      <div className="text-sm text-muted-foreground">{`${item.codriver_name} ${item.codriver_surname}`}</div>
-                      <div className="text-xs text-muted-foreground/80">{`${item.car_brand} ${item.car_version}`}</div>
+                      <div className="font-medium hidden sm:block">{`${item.driver_name} ${item.driver_surname}`}</div>
+                      <div className="font-medium block sm:hidden">{`${item.driver_name.charAt(0)}. ${item.driver_surname}`}</div>
+                      <div className="text-sm text-muted-foreground hidden sm:block">{`${item.codriver_name} ${item.codriver_surname}`}</div>
+                      <div className="text-sm text-muted-foreground block sm:hidden">{`${item.codriver_name.charAt(0)}. ${item.codriver_surname}`}</div>
+                      <div className="text-xs text-muted-foreground/80 hidden sm:block">{`${item.car_brand} ${item.car_version}`}</div>
+                      <div className="text-xs text-muted-foreground/80 block sm:hidden">{item.car_version}</div>
                     </div>
                   </div>
                 </TableCell>
