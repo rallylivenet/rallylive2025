@@ -36,7 +36,6 @@ export default function RallyStagePage() {
     async function fetchData() {
       setLoading(true);
       try {
-        // Fetch stage and overall results in parallel
         const [stageResultsResponse, overallResultsResponse] = await Promise.all([
           fetch(`https://www.rallylive.net/mobileapp/v1/json-stagetimes.php?rid=${rid}&stage_no=${stage_no}`),
           fetch(`https://www.rallylive.net/mobileapp/v1/json-overall.php?rid=${rid}&stage_no=${stage_no}`),
@@ -48,9 +47,6 @@ export default function RallyStagePage() {
         const stageResultsData: StageResult[] = await stageResultsResponse.json();
         const overallResultsData: OverallResult[] = await overallResultsResponse.json();
         
-        // This assumes we can get the stage name from a different source or construct it.
-        // For now, let's just use the stage number.
-        // A more robust solution might need another API call if the name isn't in these responses.
         setStageName(`SS${stage_no}`);
 
         setStageResults(stageResultsData);
@@ -81,7 +77,7 @@ export default function RallyStagePage() {
           </Button>
         </Link>
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Card>
           <CardHeader>
             <CardTitle>{loading ? <Skeleton className="h-7 w-2/3" /> : `Stage Results: ${stageName}`}</CardTitle>
@@ -125,7 +121,6 @@ const ResultsTable = ({ data, type }: { data: (StageResult[] | OverallResult[]),
             <TableHead className="w-[10px]">No</TableHead>
             <TableHead>Driver / Co-driver</TableHead>
             <TableHead>Time</TableHead>
-            <TableHead>Diff</TableHead>
             </TableRow>
         </TableHeader>
         <TableBody>
@@ -138,8 +133,10 @@ const ResultsTable = ({ data, type }: { data: (StageResult[] | OverallResult[]),
                 <div className="text-sm text-muted-foreground">{`${item.codriver_name} ${item.codriver_surname}`}</div>
                 <div className="text-xs text-muted-foreground/80">{`${item.car_brand} ${item.car_version}`}</div>
                 </TableCell>
-                <TableCell>{type === 'stage' ? (item as StageResult).stage_time : (item as OverallResult).total_time}</TableCell>
-                <TableCell>{item.diff_to_leader}</TableCell>
+                <TableCell>
+                    <div>{type === 'stage' ? (item as StageResult).stage_time : (item as OverallResult).total_time}</div>
+                    <div className="text-sm text-muted-foreground">{item.diff_to_leader}</div>
+                </TableCell>
             </TableRow>
             ))}
         </TableBody>
