@@ -46,6 +46,8 @@ export default function RallySlider() {
                 winner: 'TBA',
                 leader: 'TBA',
             };
+            let rallyDate: string | null = null;
+
 
             if(rally.rid && rally.rid.trim() !== '') {
                 try {
@@ -59,6 +61,7 @@ export default function RallySlider() {
                        const stageJson = await stageResponse.json();
                        if (stageJson) {
                            stageData = stageJson;
+                           rallyDate = stageData.tarih;
                        }
                     }
                     
@@ -116,7 +119,7 @@ export default function RallySlider() {
                 image: rally.thumbnail,
                 imageHint: 'rally car action',
                 lastStage: lastStageData,
-                date: rally.date,
+                date: rallyDate || rally.date,
             };
         }));
 
@@ -165,9 +168,12 @@ export default function RallySlider() {
   }
 
   const today = new Date();
-  const lastSunday = new Date(today);
-  lastSunday.setDate(today.getDate() - today.getDay());
-  lastSunday.setHours(0, 0, 0, 0);
+  const dayOfWeek = today.getDay(); // Sunday - 0, Monday - 1, ...
+  const lastMonday = new Date(today);
+  // If today is Sunday (0), we go back 6 days. If Monday (1), 0 days. If Tuesday (2), 1 day.
+  const daysToSubtract = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+  lastMonday.setDate(today.getDate() - daysToSubtract);
+  lastMonday.setHours(0, 0, 0, 0);
 
   return (
     <Carousel
@@ -181,7 +187,7 @@ export default function RallySlider() {
         {rallies.map((rally, index) => {
           const rallyDate = new Date(rally.date);
           rallyDate.setHours(0, 0, 0, 0);
-          const isOldRally = rallyDate <= lastSunday;
+          const isOldRally = rallyDate < lastMonday;
 
           return (
             <CarouselItem key={rally.id}>
@@ -241,5 +247,3 @@ export default function RallySlider() {
     </Carousel>
   );
 }
-
-    
