@@ -51,11 +51,8 @@ export default function RallySlider() {
 
             if(rally.rid && rally.rid.trim() !== '') {
                 try {
-                    const [stageResponse, itineraryResponse] = await Promise.all([
-                        fetch(`https://www.rallylive.net/mobileapp/v1/json-sonetap.php?rid=${rally.rid}`),
-                        fetch(`https://www.rallylive.net/mobileapp/v1/rally-itinerary.php?rid=${rally.rid}`),
-                    ]);
-
+                    const stageResponse = await fetch(`https://www.rallylive.net/mobileapp/v1/json-sonetap.php?rid=${rally.rid}`);
+                    
                     let stageData: LastStageFromApi | null = null;
                     if (stageResponse.ok) {
                        const stageJson = await stageResponse.json();
@@ -63,14 +60,6 @@ export default function RallySlider() {
                            stageData = stageJson;
                            rallyDate = stageData.tarih;
                        }
-                    }
-                    
-                    let itineraryData: ItineraryItem[] = [];
-                    if (itineraryResponse.ok) {
-                        const itineraryJson = await itineraryResponse.json();
-                        if(itineraryJson) {
-                            itineraryData = itineraryJson;
-                        }
                     }
 
                     let overallLeaderData: OverallLeaderFromApi[] = [];
@@ -98,8 +87,7 @@ export default function RallySlider() {
                     const leader = overallLeaderData.find(d => d.rank === 1);
 
                     if (stageData) {
-                        const stageItinerary = itineraryData.find(item => item.no === stageData?.sonEtap);
-                        const stageName = stageItinerary ? stageItinerary.name : (stageData.name || 'TBA');
+                        const stageName = stageData.name || 'TBA';
                         
                         lastStageData = {
                             name: `SS${stageData.sonEtap} ${stageName}`,
@@ -114,7 +102,7 @@ export default function RallySlider() {
             }
 
             return {
-                id: rally.ID.toString(),
+                id: rally.rid,
                 name: rally.title,
                 image: rally.thumbnail,
                 imageHint: 'rally car action',
@@ -170,7 +158,6 @@ export default function RallySlider() {
   const today = new Date();
   const dayOfWeek = today.getDay(); // Sunday - 0, Monday - 1, ...
   const lastMonday = new Date(today);
-  // If today is Sunday (0), we go back 6 days. If Monday (1), 0 days. If Tuesday (2), 1 day.
   const daysToSubtract = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
   lastMonday.setDate(today.getDate() - daysToSubtract);
   lastMonday.setHours(0, 0, 0, 0);
@@ -194,7 +181,7 @@ export default function RallySlider() {
               <div className="p-1">
                 <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 border-2">
                   <div className="relative aspect-[720/380]">
-                    <Link href={`#`} aria-label={`View details for ${rally.name}`}>
+                    <Link href={`/rally/${rally.id}`} aria-label={`View details for ${rally.name}`}>
                       <Image
                         src={rally.image || 'https://placehold.co/720x380.png'}
                         alt={rally.name}
@@ -202,7 +189,7 @@ export default function RallySlider() {
                         className="object-cover"
                         data-ai-hint={rally.imageHint}
                         priority={index === 0}
-                        unoptimized // Added because the image source is external and we don't have control over it
+                        unoptimized
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
                       <div className="absolute bottom-0 left-0 p-6">
