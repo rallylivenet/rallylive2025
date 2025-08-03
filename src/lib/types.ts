@@ -29,6 +29,8 @@ export interface LastStageFromApi {
 export interface StageWinnerInfo {
     etap_birincisi_isim: string | null;
     genel_klasman_birincisi_isim: string | null;
+    dname: string;
+    dsurname: string;
 }
 
 export interface ItineraryItem {

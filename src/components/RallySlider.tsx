@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/carousel';
 import { Card, CardContent } from '@/components/ui/card';
 import { Clock, Route } from 'lucide-react';
-import type { Rally, RallyFromApi, LastStageFromApi, StageWinnerInfo } from '@/lib/types';
+import type { Rally, RallyFromApi, LastStageFromApi, StageWinnerInfo, ItineraryItem } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from './ui/skeleton';
@@ -49,33 +49,57 @@ export default function RallySlider() {
 
             if(rally.rid && rally.rid.trim() !== '') {
                 try {
-                    const [stageResponse, stageWinnerResponse] = await Promise.all([
+                    const [stageResponse, overallLeaderResponse, itineraryResponse] = await Promise.all([
                         fetch(`https://www.rallylive.net/mobileapp/v1/json-sonetap.php?rid=${rally.rid}`),
-                        fetch(`https://www.rallylive.net/mobileapp/v1/json-sonetap.php?rid=${rally.rid}`)
+                        fetch(`https://www.rallylive.net/mobileapp/v1/json-sonetap.php?rid=${rally.rid}`),
+                        fetch(`https://www.rallylive.net/mobileapp/v1/rally-itinerary.php?rid=${rally.rid}`)
                     ]);
 
                     let stageData: LastStageFromApi | null = null;
                     if (stageResponse.ok) {
                        const stageJson = await stageResponse.json();
-                       if (stageJson) {
+                       if (stageJson && stageJson.sonEtap) { // Check if sonEtap is available
                            stageData = stageJson;
                        }
                     }
                     
-                    let stageWinnerData: StageWinnerInfo | null = null;
-                     if (stageWinnerResponse.ok) {
-                       const stageWinnerJson = await stageWinnerResponse.json();
-                       if (stageWinnerJson) {
-                           stageWinnerData = stageWinnerJson;
+                    let overallLeaderData: { genel_klasman_birincisi_isim: string | null } | null = null;
+                     if (overallLeaderResponse.ok) {
+                       const overallLeaderJson = await overallLeaderResponse.json();
+                       if (overallLeaderJson) {
+                           overallLeaderData = overallLeaderJson;
                        }
                     }
 
+                    let itineraryData: ItineraryItem[] = [];
+                    if (itineraryResponse.ok) {
+                        const itineraryJson = await itineraryResponse.json();
+                        if(itineraryJson) {
+                            itineraryData = itineraryJson;
+                        }
+                    }
+                    
+                    let stageWinnerData: StageWinnerInfo | null = null;
+                    if (stageData && stageData.sonEtap) {
+                        const stageWinnerResponse = await fetch(`https://www.rallylive.net/mobileapp/v1/json-besttime.php?rid=${rally.rid}&stage=${stageData.sonEtap}`);
+                        if (stageWinnerResponse.ok) {
+                            const stageWinnerJson = await stageWinnerResponse.json();
+                            if (stageWinnerJson) {
+                                stageWinnerData = stageWinnerJson;
+                            }
+                        }
+                    }
+
+
                     if (stageData) {
+                        const stageItinerary = itineraryData.find(item => item.no === stageData?.sonEtap);
+                        const stageName = stageItinerary ? stageItinerary.name : (stageData.name || 'TBA');
+                        
                         lastStageData = {
-                            name: `SS${stageData.sonEtap} ${stageData.name}` || 'TBA',
+                            name: `SS${stageData.sonEtap} ${stageName}`,
                             distance: `${stageData.km || '0.00'} km`,
-                            winner: stageWinnerData?.etap_birincisi_isim || 'TBA',
-                            leader: stageWinnerData?.genel_klasman_birincisi_isim || 'TBA',
+                            winner: stageWinnerData ? `${stageWinnerData.dname} ${stageWinnerData.dsurname}` : 'TBA',
+                            leader: overallLeaderData?.genel_klasman_birincisi_isim || 'TBA',
                         };
                     }
                 } catch (e) {
