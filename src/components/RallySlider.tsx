@@ -116,6 +116,7 @@ export default function RallySlider() {
                 image: rally.thumbnail,
                 imageHint: 'rally car action',
                 lastStage: lastStageData,
+                date: rally.date,
             };
         }));
 
@@ -163,6 +164,11 @@ export default function RallySlider() {
       )
   }
 
+  const today = new Date();
+  const lastSunday = new Date(today);
+  lastSunday.setDate(today.getDate() - today.getDay());
+  lastSunday.setHours(0, 0, 0, 0);
+
   return (
     <Carousel
       opts={{
@@ -172,51 +178,59 @@ export default function RallySlider() {
       className="w-full max-w-5xl mx-auto"
     >
       <CarouselContent>
-        {rallies.map((rally, index) => (
-          <CarouselItem key={rally.id}>
-            <div className="p-1">
-              <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 border-2">
-                <div className="relative aspect-[720/380]">
-                  <Link href={`#`} aria-label={`View details for ${rally.name}`}>
-                    <Image
-                      src={rally.image || 'https://placehold.co/720x380.png'}
-                      alt={rally.name}
-                      fill
-                      className="object-cover"
-                      data-ai-hint={rally.imageHint}
-                      priority={index === 0}
-                      unoptimized // Added because the image source is external and we don't have control over it
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-                    <div className="absolute bottom-0 left-0 p-6">
-                      <h3 className="text-3xl lg:text-4xl font-bold text-white font-headline">{rally.name}</h3>
-                    </div>
-                  </Link>
-                  <Badge variant="destructive" className="absolute top-4 right-4 text-base shadow-lg">LIVE</Badge>
-                </div>
-                <CardContent className="p-6">
-                  <div>
-                    <h4 className="font-bold font-headline text-xl mb-4">Latest Stage: {rally.lastStage.name}</h4>
-                    <ul className="space-y-3">
-                      <li className="flex items-center">
-                        <Route className="h-5 w-5 mr-3 text-primary shrink-0" />
-                        <span>Distance: <span className="font-semibold">{rally.lastStage.distance}</span></span>
-                      </li>
-                      <li className="flex items-center">
-                        <CheckeredFlagIcon className="h-5 w-5 mr-3 text-primary shrink-0" />
-                        <span>Stage Winner: <span className="font-semibold text-accent">{rally.lastStage.winner}</span></span>
-                      </li>
-                      <li className="flex items-center">
-                        <Clock className="h-5 w-5 mr-3 text-primary shrink-0" />
-                        <span>Overall Leader: <span className="font-semibold text-accent">{rally.lastStage.leader}</span></span>
-                      </li>
-                    </ul>
+        {rallies.map((rally, index) => {
+          const rallyDate = new Date(rally.date);
+          rallyDate.setHours(0, 0, 0, 0);
+          const isOldRally = rallyDate <= lastSunday;
+
+          return (
+            <CarouselItem key={rally.id}>
+              <div className="p-1">
+                <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 border-2">
+                  <div className="relative aspect-[720/380]">
+                    <Link href={`#`} aria-label={`View details for ${rally.name}`}>
+                      <Image
+                        src={rally.image || 'https://placehold.co/720x380.png'}
+                        alt={rally.name}
+                        fill
+                        className="object-cover"
+                        data-ai-hint={rally.imageHint}
+                        priority={index === 0}
+                        unoptimized // Added because the image source is external and we don't have control over it
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+                      <div className="absolute bottom-0 left-0 p-6">
+                        <h3 className="text-3xl lg:text-4xl font-bold text-white font-headline">{rally.name}</h3>
+                      </div>
+                    </Link>
+                    {!isOldRally && (
+                      <Badge variant="destructive" className="absolute top-4 right-4 text-base shadow-lg">LIVE</Badge>
+                    )}
                   </div>
-                </CardContent>
-              </Card>
-            </div>
-          </CarouselItem>
-        ))}
+                  <CardContent className="p-6">
+                    <div>
+                      <h4 className="font-bold font-headline text-xl mb-4">Latest Stage: {rally.lastStage.name}</h4>
+                      <ul className="space-y-3">
+                        <li className="flex items-center">
+                          <Route className="h-5 w-5 mr-3 text-primary shrink-0" />
+                          <span>Distance: <span className="font-semibold">{rally.lastStage.distance}</span></span>
+                        </li>
+                        <li className="flex items-center">
+                          <CheckeredFlagIcon className="h-5 w-5 mr-3 text-primary shrink-0" />
+                          <span>Stage Winner: <span className="font-semibold text-accent">{rally.lastStage.winner}</span></span>
+                        </li>
+                        <li className="flex items-center">
+                          <Clock className="h-5 w-5 mr-3 text-primary shrink-0" />
+                          <span>Overall Leader: <span className="font-semibold text-accent">{rally.lastStage.leader}</span></span>
+                        </li>
+                      </ul>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </CarouselItem>
+          )
+        })}
       </CarouselContent>
       {rallies.length > 1 && (
         <>

@@ -9,6 +9,7 @@ export interface Rally {
     winner: string;
     leader: string;
   };
+  date: string;
 }
 
 export interface RallyFromApi {
@@ -16,6 +17,7 @@ export interface RallyFromApi {
   title: string;
   thumbnail: string;
   rid: string;
+  date: string;
 }
 
 export interface LastStageFromApi {
