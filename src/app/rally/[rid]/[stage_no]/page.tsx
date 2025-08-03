@@ -77,7 +77,7 @@ export default function RallyStagePage() {
           </Button>
         </Link>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-4">
         <Card>
           <CardHeader>
             <CardTitle>{loading ? <Skeleton className="h-7 w-2/3" /> : `Stage Results: ${stageName}`}</CardTitle>
