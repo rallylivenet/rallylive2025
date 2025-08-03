@@ -117,23 +117,27 @@ const ResultsTable = ({ data, type }: { data: (StageResult[] | OverallResult[]),
         <Table>
         <TableHeader>
             <TableRow>
-            <TableHead className="w-[10px]">#</TableHead>
-            <TableHead className="w-[10px]">No</TableHead>
             <TableHead>Driver / Co-driver</TableHead>
-            <TableHead>Time</TableHead>
+            <TableHead className="w-[10px] text-right">Time</TableHead>
             </TableRow>
         </TableHeader>
         <TableBody>
             {data.map((item, index) => (
             <TableRow key={index}>
-                <TableCell>{item.rank}</TableCell>
-                <TableCell>{item.door_no}</TableCell>
                 <TableCell>
-                <div className="font-medium">{`${item.driver_name} ${item.driver_surname}`}</div>
-                <div className="text-sm text-muted-foreground">{`${item.codriver_name} ${item.codriver_surname}`}</div>
-                <div className="text-xs text-muted-foreground/80">{`${item.car_brand} ${item.car_version}`}</div>
+                  <div className="flex">
+                    <div className="w-10 flex-shrink-0">
+                      <div>{item.rank}</div>
+                      <div className="text-sm text-muted-foreground">{item.door_no}</div>
+                    </div>
+                    <div>
+                      <div className="font-medium">{`${item.driver_name} ${item.driver_surname}`}</div>
+                      <div className="text-sm text-muted-foreground">{`${item.codriver_name} ${item.codriver_surname}`}</div>
+                      <div className="text-xs text-muted-foreground/80">{`${item.car_brand} ${item.car_version}`}</div>
+                    </div>
+                  </div>
                 </TableCell>
-                <TableCell>
+                <TableCell className="text-right">
                     <div>{type === 'stage' ? (item as StageResult).stage_time : (item as OverallResult).total_time}</div>
                     <div className="text-sm text-muted-foreground">{item.diff_to_leader}</div>
                 </TableCell>
