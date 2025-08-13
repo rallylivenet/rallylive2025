@@ -117,14 +117,14 @@ const ResultsTable = ({ data, type }: { data: (StageResult[] | OverallResult[]),
         <Table>
         <TableHeader>
             <TableRow>
-            <TableHead>Driver / Co-driver</TableHead>
-            <TableHead className="w-[10px] text-right">Time</TableHead>
+            <TableHead className="p-2">Driver / Co-driver</TableHead>
+            <TableHead className="p-2 w-[10px] text-right">Time</TableHead>
             </TableRow>
         </TableHeader>
         <TableBody>
             {data.map((item, index) => (
             <TableRow key={index}>
-                <TableCell>
+                <TableCell className="p-2">
                   <div className="flex">
                     <div className="w-10 flex-shrink-0 text-center">
                       <div>{item.rank}</div>
@@ -140,7 +140,7 @@ const ResultsTable = ({ data, type }: { data: (StageResult[] | OverallResult[]),
                     </div>
                   </div>
                 </TableCell>
-                <TableCell className="text-right">
+                <TableCell className="p-2 text-right">
                     <div>{type === 'stage' ? (item as StageResult).stage_time : (item as OverallResult).total_time}</div>
                     <div className="text-sm text-muted-foreground">{item.diff_to_leader}</div>
                 </TableCell>
