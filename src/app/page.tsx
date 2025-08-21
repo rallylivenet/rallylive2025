@@ -26,7 +26,7 @@ export default function Home() {
         <section className="mb-12">
           <RallySlider />
         </section>
-        <section className="flex justify-center items-center rounded-lg">
+        <section className="flex justify-center items-center rounded-lg w-full">
           <AdMob adSlot="9476568198" />
         </section>
       </main>
