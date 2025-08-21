@@ -1,5 +1,5 @@
 import RallySlider from '@/components/RallySlider';
-import { Flag } from 'lucide-react';
+import Image from 'next/image';
 
 export default function Home() {
   return (
@@ -7,19 +7,14 @@ export default function Home() {
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex h-16 items-center">
           <div className="flex items-center space-x-2">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="h-8 w-8 text-primary"
-            >
-              <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
-              <line x1="4" y1="22" x2="4" y2="15"></line>
-            </svg>
+            <Image
+              src="https://rallylive.net/wp-content/uploads/cropped-rallylive-logo-64-ico.png"
+              alt="RallyLive Net Logo"
+              width={32}
+              height={32}
+              className="h-8 w-8"
+              unoptimized
+            />
             <h1 className="text-2xl font-bold font-headline text-foreground">
               RallyLive Net
             </h1>
