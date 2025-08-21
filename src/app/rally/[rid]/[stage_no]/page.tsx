@@ -130,7 +130,7 @@ const ResultsTable = ({ data, type }: { data: (StageResult[] | OverallResult[]),
             <TableRow key={index}>
                 <TableCell className="p-2">
                   <div className="flex">
-                    <div className="w-10 flex-shrink-0 text-center">
+                    <div className="w-8 flex-shrink-0 text-center">
                       <div>{item.rank}</div>
                       <div className="text-sm text-muted-foreground">{item.door_no}</div>
                     </div>
