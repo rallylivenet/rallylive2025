@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect } from 'react';
@@ -24,7 +25,7 @@ const AdMob = ({ adSlot }: AdMobProps) => {
   return (
     <ins
       className="adsbygoogle"
-      style={{ display: 'block' }}
+      style={{ display: 'block', width: '100%' }}
       data-ad-client="ca-pub-3358665652492622"
       data-ad-slot={adSlot}
       data-ad-format="auto"
