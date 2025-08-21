@@ -1,5 +1,6 @@
 import RallySlider from '@/components/RallySlider';
 import Image from 'next/image';
+import AdMob from '@/components/AdMob';
 
 export default function Home() {
   return (
@@ -25,8 +26,8 @@ export default function Home() {
         <section className="mb-12">
           <RallySlider />
         </section>
-        <section className="flex justify-center items-center h-24 border-2 border-dashed rounded-lg">
-          <p className="text-muted-foreground">AdMob Ad Space</p>
+        <section className="flex justify-center items-center rounded-lg">
+          <AdMob adSlot="9476568198" />
         </section>
       </main>
       <footer className="py-6 border-t">
