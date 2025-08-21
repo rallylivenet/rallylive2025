@@ -86,7 +86,7 @@ export default function RallyStagePage() {
           <CardHeader className="p-4">
             <CardTitle>Stage</CardTitle>
           </CardHeader>
-          <CardContent className="p-4 pt-0">
+          <CardContent className="p-1 pt-0">
             {loading ? (
               <ResultsTableSkeleton />
             ) : (
@@ -98,7 +98,7 @@ export default function RallyStagePage() {
           <CardHeader className="p-4">
             <CardTitle>Overall</CardTitle>
           </CardHeader>
-          <CardContent className="p-4 pt-0">
+          <CardContent className="p-1 pt-0">
             {loading ? (
               <ResultsTableSkeleton />
             ) : (
