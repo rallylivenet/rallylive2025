@@ -16,7 +16,7 @@ export default function Home() {
               unoptimized
             />
             <h1 className="text-2xl font-bold font-headline text-foreground">
-              RallyLive Net
+              RallyLive
             </h1>
           </div>
         </div>
@@ -24,6 +24,9 @@ export default function Home() {
       <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
         <section className="mb-12">
           <RallySlider />
+        </section>
+        <section className="flex justify-center items-center h-24 border-2 border-dashed rounded-lg">
+          <p className="text-muted-foreground">AdMob Ad Space</p>
         </section>
       </main>
       <footer className="py-6 border-t">
