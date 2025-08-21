@@ -36,18 +36,21 @@ export default function RallyStagePage() {
     async function fetchData() {
       setLoading(true);
       try {
-        const [stageResultsResponse, overallResultsResponse] = await Promise.all([
+        const [stageResultsResponse, overallResultsResponse, stageNameResponse] = await Promise.all([
           fetch(`https://www.rallylive.net/mobileapp/v1/json-stagetimes.php?rid=${rid}&stage_no=${stage_no}`),
           fetch(`https://www.rallylive.net/mobileapp/v1/json-overall.php?rid=${rid}&stage_no=${stage_no}`),
+          fetch(`https://www.rallylive.net/mobileapp/v1/json-sonetap.php?rid=${rid}`)
         ]);
 
         if (!stageResultsResponse.ok) throw new Error('Failed to fetch stage results');
         if (!overallResultsResponse.ok) throw new Error('Failed to fetch overall results');
+        if (!stageNameResponse.ok) throw new Error('Failed to fetch stage name');
 
         const stageResultsData: StageResult[] = await stageResultsResponse.json();
         const overallResultsData: OverallResult[] = await overallResultsResponse.json();
+        const stageNameData = await stageNameResponse.json();
         
-        setStageName(`SS${stage_no}`);
+        setStageName(`SS${stage_no} ${stageNameData.name}`);
 
         setStageResults(stageResultsData);
         setOverallResults(overallResultsData);
@@ -69,20 +72,21 @@ export default function RallyStagePage() {
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
-      <div className="mb-8">
+      <div className="mb-4 flex justify-between items-center">
         <Link href="/">
           <Button variant="outline">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Rallies
           </Button>
         </Link>
+        <h2 className="text-xl font-bold">{loading ? <Skeleton className="h-7 w-48" /> : stageName}</h2>
       </div>
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-1">
         <Card>
-          <CardHeader>
-            <CardTitle>{loading ? <Skeleton className="h-7 w-2/3" /> : `Stage Results: ${stageName}`}</CardTitle>
+          <CardHeader className="p-4">
+            <CardTitle>Stage</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-4 pt-0">
             {loading ? (
               <ResultsTableSkeleton />
             ) : (
@@ -91,10 +95,10 @@ export default function RallyStagePage() {
           </CardContent>
         </Card>
         <Card>
-          <CardHeader>
-            <CardTitle>{loading ? <Skeleton className="h-7 w-2/3" /> : `Overall Results (After ${stageName})`}</CardTitle>
+          <CardHeader className="p-4">
+            <CardTitle>Overall</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-4 pt-0">
             {loading ? (
               <ResultsTableSkeleton />
             ) : (
