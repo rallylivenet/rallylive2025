@@ -13,10 +13,11 @@ import {
 } from '@/components/ui/carousel';
 import { Card, CardContent } from '@/components/ui/card';
 import { Clock, Route } from 'lucide-react';
-import type { Rally, RallyFromApi, LastStageFromApi, StageWinnerInfo, ItineraryItem, OverallLeaderFromApi } from '@/lib/types';
+import type { Rally, RallyFromApi, LastStageFromApi, StageWinnerInfo, OverallLeaderFromApi } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from './ui/skeleton';
+import Countdown from './Countdown';
 
 const CheckeredFlagIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
@@ -63,8 +64,8 @@ export default function RallySlider() {
                        }
                     }
 
-                    let overallLeaderData: OverallLeaderFromApi[] = [];
-                    if (stageData && stageData.sonEtap) {
+                    if (stageData && stageData.sonEtap && stageData.sonEtap !== '0') {
+                        let overallLeaderData: OverallLeaderFromApi[] = [];
                         const overallLeaderResponse = await fetch(`https://www.rallylive.net/mobileapp/v1/json-overall.php?rid=${rally.rid}&stage_no=${stageData.sonEtap}`)
                         if (overallLeaderResponse.ok) {
                             const overallLeaderJson = await overallLeaderResponse.json();
@@ -72,10 +73,8 @@ export default function RallySlider() {
                                 overallLeaderData = overallLeaderJson;
                             }
                         }
-                    }
-                    
-                    let stageWinnerData: StageWinnerInfo | null = null;
-                    if (stageData && stageData.sonEtap) {
+                        
+                        let stageWinnerData: StageWinnerInfo | null = null;
                         const stageWinnerResponse = await fetch(`https://www.rallylive.net/mobileapp/v1/json-besttime.php?rid=${rally.rid}&stage=${stageData.sonEtap}`);
                         if (stageWinnerResponse.ok) {
                             const stageWinnerJson = await stageWinnerResponse.json();
@@ -83,13 +82,10 @@ export default function RallySlider() {
                                 stageWinnerData = stageWinnerJson;
                             }
                         }
-                    }
 
-                    const leader = overallLeaderData.find(d => d.rank === 1);
-
-                    if (stageData) {
+                        const leader = overallLeaderData.find(d => d.rank === 1);
                         const stageName = stageData.name || 'TBA';
-                        
+                            
                         lastStageData = {
                             name: `SS${stageData.sonEtap} ${stageName}`,
                             distance: `${stageData.km || '0.00'} km`,
@@ -97,6 +93,8 @@ export default function RallySlider() {
                             leader: leader ? `${leader.driver_name} ${leader.driver_surname} / ${leader.codriver_name} ${leader.codriver_surname}` : 'TBA',
                             number: stageData.sonEtap || '0',
                         };
+                    } else if (stageData) {
+                        lastStageData.number = '0';
                     }
                 } catch (e) {
                     console.error(`Failed to fetch stage or itinerary data for rally ${rally.rid}`, e);
@@ -180,6 +178,7 @@ export default function RallySlider() {
           const resultsLink = rally.lastStage.number !== '0' 
             ? `/rally/${rally.id}/${rally.lastStage.number}` 
             : `/rally/${rally.id}`;
+          const isUpcoming = rally.lastStage.number === '0';
 
           return (
             <CarouselItem key={rally.id}>
@@ -201,11 +200,17 @@ export default function RallySlider() {
                         <h3 className="text-3xl lg:text-4xl font-bold text-white font-headline">{rally.name}</h3>
                       </div>
                     </Link>
-                    {!isOldRally && (
+                    {!isOldRally && !isUpcoming && (
                       <Badge variant="destructive" className="absolute top-4 right-4 text-base shadow-lg">LIVE</Badge>
                     )}
                   </div>
                   <CardContent className="p-6">
+                    {isUpcoming ? (
+                        <div className="text-center">
+                            <h4 className="font-bold font-headline text-xl mb-4">Rally starts in:</h4>
+                            <Countdown targetDate={rally.date} />
+                        </div>
+                    ) : (
                     <div>
                       <h4 className="font-bold font-headline text-xl mb-4">Latest Stage: {rally.lastStage.name}</h4>
                       <ul className="space-y-3">
@@ -223,6 +228,7 @@ export default function RallySlider() {
                         </li>
                       </ul>
                     </div>
+                    )}
                   </CardContent>
                 </Card>
               </div>
