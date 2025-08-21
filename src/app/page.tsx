@@ -1,12 +1,15 @@
 import RallySlider from '@/components/RallySlider';
 import Image from 'next/image';
 import AdMob from '@/components/AdMob';
+import { Button } from '@/components/ui/button';
+import { Bell } from 'lucide-react';
+import Link from 'next/link';
 
 export default function Home() {
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex h-16 items-center">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex h-16 items-center justify-between">
           <div className="flex items-center space-x-2">
             <Image
               src="https://rallylive.net/wp-content/uploads/cropped-rallylive-logo-64-ico.png"
@@ -20,6 +23,12 @@ export default function Home() {
               RallyLive
             </h1>
           </div>
+          <Link href="/push">
+            <Button variant="ghost" size="icon">
+                <Bell />
+                <span className="sr-only">Notifications</span>
+            </Button>
+          </Link>
         </div>
       </header>
       <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
@@ -38,3 +47,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
