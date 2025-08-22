@@ -1,6 +1,7 @@
 
 
 
+
 export interface Rally {
   id: string;
   name: string;
@@ -109,6 +110,21 @@ export interface Post {
   excerpt: {
     rendered: string;
   };
+  content: {
+    rendered: string;
+  };
   date: string;
+  featured_media: number;
+  _embedded?: {
+    'wp:featuredmedia'?: {
+      id: number;
+      source_url: string;
+      alt_text: string;
+    }[];
+    'author'?: {
+        id: number;
+        name: string;
+    }[];
+  }
 }
     
