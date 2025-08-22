@@ -4,7 +4,7 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Bell } from 'lucide-react';
+import { ArrowLeft, Bell, LogIn } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import Image from 'next/image';
 
@@ -60,6 +60,12 @@ export default function PushMessagesPage() {
                 </h1>
             </Link>
           </div>
+          <Link href="/login">
+            <Button variant="ghost" size="icon">
+                <LogIn />
+                <span className="sr-only">Login</span>
+            </Button>
+          </Link>
         </div>
       </header>
       <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
@@ -104,5 +110,3 @@ export default function PushMessagesPage() {
     </div>
   );
 }
-
-    

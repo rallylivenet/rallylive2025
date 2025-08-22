@@ -2,7 +2,7 @@ import RallySlider from '@/components/RallySlider';
 import Image from 'next/image';
 import AdMob from '@/components/AdMob';
 import { Button } from '@/components/ui/button';
-import { Bell } from 'lucide-react';
+import { Bell, LogIn } from 'lucide-react';
 import Link from 'next/link';
 import RallyNews from '@/components/RallyNews';
 
@@ -24,12 +24,20 @@ export default function Home() {
               RallyLive
             </h1>
           </div>
-          <Link href="/push">
-            <Button variant="ghost" size="icon">
-                <Bell />
-                <span className="sr-only">Notifications</span>
-            </Button>
-          </Link>
+          <div className="flex items-center space-x-2">
+             <Link href="/push">
+                <Button variant="ghost" size="icon">
+                    <Bell />
+                    <span className="sr-only">Notifications</span>
+                </Button>
+              </Link>
+              <Link href="/login">
+                <Button variant="ghost" size="icon">
+                    <LogIn />
+                    <span className="sr-only">Login</span>
+                </Button>
+              </Link>
+          </div>
         </div>
       </header>
       <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
