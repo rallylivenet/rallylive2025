@@ -1,5 +1,6 @@
 
 
+
 export interface Rally {
   id: string;
   name: string;
@@ -97,5 +98,17 @@ export interface OverallResult {
     penalty_time: string;
     diff_to_leader: string;
     diff_to_previous: string;
+}
+
+export interface Post {
+  id: number;
+  link: string;
+  title: {
+    rendered: string;
+  };
+  excerpt: {
+    rendered: string;
+  };
+  date: string;
 }
     

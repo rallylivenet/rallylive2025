@@ -4,6 +4,7 @@ import AdMob from '@/components/AdMob';
 import { Button } from '@/components/ui/button';
 import { Bell } from 'lucide-react';
 import Link from 'next/link';
+import RallyNews from '@/components/RallyNews';
 
 export default function Home() {
   return (
@@ -34,6 +35,9 @@ export default function Home() {
       <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
         <section className="mb-12">
           <RallySlider />
+        </section>
+        <section className="mb-12">
+          <RallyNews />
         </section>
         <section className="w-full">
           <AdMob adSlot="9476568198" />
