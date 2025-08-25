@@ -1,6 +1,7 @@
 
 'use client';
 
+import * as React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,8 +11,41 @@ import { ArrowLeft, Mail, User, BookText, MessageSquare } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { useToast } from '@/hooks/use-toast';
 
 export default function ContactPage() {
+  const { toast } = useToast();
+  const [formData, setFormData] = React.useState({
+    name: '',
+    email: '',
+    subject: '',
+    message: '',
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { id, value } = e.target;
+    setFormData(prev => ({ ...prev, [id]: value }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.name || !formData.email) {
+      toast({
+        variant: 'destructive',
+        title: 'Missing Information',
+        description: 'Please fill in your name and email address.',
+      });
+      return;
+    }
+
+    const mailtoSubject = formData.subject || 'Contact Form Submission';
+    const mailtoBody = `Name: ${formData.name}\nEmail: ${formData.email}\n\nMessage:\n${formData.message}`;
+    const mailtoLink = `mailto:contact@rallylive.net?subject=${encodeURIComponent(mailtoSubject)}&body=${encodeURIComponent(mailtoBody)}`;
+
+    window.location.href = mailtoLink;
+  };
+
+
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -56,22 +90,22 @@ export default function ContactPage() {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                <form className="space-y-6">
+                <form className="space-y-6" onSubmit={handleSubmit}>
                     <div className="space-y-2">
                         <Label htmlFor="name">Your Name (required)</Label>
-                        <Input id="name" placeholder="John Doe" required />
+                        <Input id="name" placeholder="John Doe" value={formData.name} onChange={handleChange} required />
                     </div>
                      <div className="space-y-2">
                         <Label htmlFor="email">Your Email (required)</Label>
-                        <Input id="email" type="email" placeholder="john.doe@example.com" required />
+                        <Input id="email" type="email" placeholder="john.doe@example.com" value={formData.email} onChange={handleChange} required />
                     </div>
                      <div className="space-y-2">
                         <Label htmlFor="subject">Subject</Label>
-                        <Input id="subject" placeholder="Question about..." />
+                        <Input id="subject" placeholder="Question about..." value={formData.subject} onChange={handleChange} />
                     </div>
                      <div className="space-y-2">
                         <Label htmlFor="message">Your Message</Label>
-                        <Textarea id="message" placeholder="Your message here..." rows={5} />
+                        <Textarea id="message" placeholder="Your message here..." rows={5} value={formData.message} onChange={handleChange} />
                     </div>
                     <Button type="submit" className="w-full">
                         <MessageSquare className="mr-2 h-4 w-4" />
