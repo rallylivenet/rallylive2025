@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
 import { GoogleLogin, CredentialResponse } from '@react-oauth/google';
+import NavigationMenu from '@/components/NavigationMenu';
 
 const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="24px" height="24px" {...props}>
@@ -73,6 +74,7 @@ export default function LoginPage() {
               </h1>
             </Link>
           </div>
+           <NavigationMenu />
         </div>
       </header>
       <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 flex items-center justify-center">

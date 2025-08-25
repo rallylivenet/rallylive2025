@@ -6,10 +6,11 @@ import { useParams } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import type { Post } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ArrowLeft, Calendar, LogIn, User } from 'lucide-react';
+import { ArrowLeft, Calendar, User } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
+import NavigationMenu from '@/components/NavigationMenu';
 
 export default function PostPage() {
     const params = useParams();
@@ -104,12 +105,7 @@ export default function PostPage() {
                         </h1>
                     </Link>
                 </div>
-                 <Link href="/login">
-                    <Button variant="ghost" size="icon">
-                        <LogIn />
-                        <span className="sr-only">Login</span>
-                    </Button>
-                  </Link>
+                 <NavigationMenu />
                 </div>
             </header>
             <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
