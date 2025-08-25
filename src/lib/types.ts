@@ -195,10 +195,6 @@ export const AnswerRallyQuestionOutputSchema = z.object({
 export type AnswerRallyQuestionOutput = z.infer<typeof AnswerRallyQuestionOutputSchema>;
 
 export const AskAiAboutRallyFormSchema = z.object({
-    rid: z.string(),
-    stage_no: z.string(),
-    question: z.string(),
-    rallyName: z.string(),
-    stageName: z.string(),
+    question: z.string().min(1, 'Please enter a question.'),
 });
 export type AskAiAboutRallyFormValues = z.infer<typeof AskAiAboutRallyFormSchema>;

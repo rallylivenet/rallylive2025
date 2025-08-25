@@ -18,6 +18,7 @@ import { askAiAction } from '@/app/actions';
 import { Skeleton } from './ui/skeleton';
 import ReactMarkdown from 'react-markdown';
 import { Card, CardContent } from './ui/card';
+import type { AskAiAboutRallyFormValues } from '@/lib/types';
 
 interface AskAiAboutRallyDialogProps {
   rid: string;
@@ -46,11 +47,14 @@ export default function AskAiAboutRallyDialog({ rid, stage_no, rallyName, stageN
   }, [messages]);
 
   const handleAsk = async () => {
-    if (!question.trim() || !rallyName || !stageName) {
+    if (!question.trim()) {
+        return;
+    }
+     if (!rallyName || !stageName) {
         toast({
             variant: 'destructive',
-            title: 'Missing Information',
-            description: 'Could not determine the rally context. Please refresh the page.',
+            title: 'Missing Rally Information',
+            description: 'Could not determine the rally context. Please refresh the page and try again.',
         });
         return;
     }
@@ -60,7 +64,7 @@ export default function AskAiAboutRallyDialog({ rid, stage_no, rallyName, stageN
     setMessages(prev => [...prev, {role: 'user', content: question}]);
     
     try {
-      const result = await askAiAction({ rid, stage_no, question, rallyName, stageName });
+      const result = await askAiAction({ question }, { rid, stage_no, rallyName, stageName });
       if (result.success && result.answer) {
         setMessages(prev => [...prev, {role: 'assistant', content: result.answer!}]);
         setQuestion('');

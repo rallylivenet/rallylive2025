@@ -4,8 +4,16 @@
 import { answerRallyQuestion, type AnswerRallyQuestionInput } from '@/ai/flows/answer-rally-question';
 import { AskAiAboutRallyFormSchema, type AskAiAboutRallyFormValues } from '@/lib/types';
 
+interface RallyContext {
+  rid: string;
+  stage_no: string;
+  rallyName: string;
+  stageName: string;
+}
+
 export async function askAiAction(
-  data: AskAiAboutRallyFormValues
+  data: AskAiAboutRallyFormValues,
+  context: RallyContext
 ): Promise<{ success: boolean; answer?: string; error?: string }> {
   
   const validation = AskAiAboutRallyFormSchema.safeParse(data);
@@ -14,7 +22,8 @@ export async function askAiAction(
     return { success: false, error: 'Invalid data provided.' };
   }
 
-  const { rid, stage_no, question, rallyName, stageName } = validation.data;
+  const { question } = validation.data;
+  const { rid, stage_no, rallyName, stageName } = context;
   
   try {
     const result = await answerRallyQuestion({ rid, stage_no, question, rallyName, stageName });
