@@ -90,7 +90,6 @@ export default function RallyNews() {
                           alt={featuredMedia.alt_text || post.title.rendered}
                           fill
                           className="object-cover"
-                          unoptimized
                        />
                     </div>
                   </Link>

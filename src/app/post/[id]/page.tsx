@@ -96,7 +96,6 @@ export default function PostPage() {
                         width={32}
                         height={32}
                         className="h-8 w-8"
-                        unoptimized
                         />
                     </Link>
                     <Link href="/">
@@ -142,7 +141,6 @@ export default function PostPage() {
                                 fill
                                 className="object-cover"
                                 priority
-                                unoptimized
                             />
                         </div>
                     )}

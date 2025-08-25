@@ -36,7 +36,6 @@ export default function PushSettingsPage() {
                 width={32}
                 height={32}
                 className="h-8 w-8"
-                unoptimized
                 />
             </Link>
             <Link href="/">

@@ -1,3 +1,4 @@
+
 import RallySlider from '@/components/RallySlider';
 import Image from 'next/image';
 import AdMob from '@/components/AdMob';
@@ -17,7 +18,6 @@ export default function Home() {
               width={32}
               height={32}
               className="h-8 w-8"
-              unoptimized
             />
             <h1 className="text-2xl font-bold font-headline text-foreground">
               RallyLive
