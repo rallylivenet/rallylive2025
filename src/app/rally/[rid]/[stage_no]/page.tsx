@@ -355,7 +355,7 @@ const ResultsTable = ({ data, type }: { data: (StageResult[] | OverallResult[]),
           <TableBody>
             {data.map((item, index) => {
               const penaltyStr = type === 'overall' ? formatPenalty((item as OverallResult).penalty_time) : '';
-              const flagUrl = item.driver_flag ? `https://rallylive.net/images/flags/16/${item.driver_flag}` : null;
+              const flagUrl = item.driver_flag ? `https://rallylive.net/images/flags/16/${item.driver_flag}.png` : null;
               return (
                 <TableRow key={index}>
                     <TableCell className="p-1 text-center font-bold align-top">
@@ -427,5 +427,7 @@ const ResultsTableSkeleton = () => {
     )
 }
 
+
+    
 
     
