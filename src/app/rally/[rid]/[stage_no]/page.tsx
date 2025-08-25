@@ -248,12 +248,14 @@ const ResultsTable = ({ data, type }: { data: (StageResult[] | OverallResult[]),
     }
   
     const formatPenalty = (penalty: string): string => {
-        if (!penalty || penalty === '00:00.0') return '';
+        if (!penalty || penalty === '00:00.0' || penalty === '0' || penalty === '') return '';
         
         const parts = penalty.split(':');
         const minutes = parseInt(parts[0], 10);
         const seconds = parseFloat(parts[1]);
         const totalSeconds = minutes * 60 + seconds;
+
+        if (totalSeconds === 0) return '';
 
         return `+${totalSeconds.toFixed(1)}s`;
     }
@@ -280,7 +282,7 @@ const ResultsTable = ({ data, type }: { data: (StageResult[] | OverallResult[]),
                       {/* Compact view for mobile */}
                       <div className="md:hidden">
                         <div className="font-bold whitespace-nowrap">{`${item.driver_surname.toUpperCase()}`}</div>
-                        <div className="text-muted-foreground/80 flex items-center gap-2">
+                        <div className="text-muted-foreground/80 flex flex-col">
                            <span>#{item.door_no} {item.car_version}</span>
                            {penaltyStr && <span className="text-destructive font-bold">{penaltyStr}</span>}
                         </div>
@@ -289,9 +291,9 @@ const ResultsTable = ({ data, type }: { data: (StageResult[] | OverallResult[]),
                       <div className="hidden md:block">
                         <div className="font-bold whitespace-nowrap">{`${item.driver_name.toUpperCase()} ${item.driver_surname.toUpperCase()}`}</div>
                         <div className="text-muted-foreground/90 text-[11px] whitespace-nowrap">{`${item.codriver_name} ${item.codriver_surname}`}</div>
-                        <div className="text-muted-foreground/80 text-[11px] flex items-center gap-2">
+                        <div className="text-muted-foreground/80 text-[11px] flex flex-col">
                           <span>#{item.door_no} {item.car_brand} {item.car_version}</span>
-                          {penaltyStr && <span className="text-destructive font-bold">{penaltyStr}</span>}
+                           {penaltyStr && <span className="text-destructive font-bold">{penaltyStr}</span>}
                         </div>
                       </div>
                     </TableCell>
