@@ -12,6 +12,7 @@
 import {ai} from '@/ai/genkit';
 import { AnswerRallyQuestionInputSchema, AnswerRallyQuestionOutputSchema } from '@/lib/types';
 import type { AnswerRallyQuestionInput, AnswerRallyQuestionOutput, StageResult, OverallResult, ItineraryItem } from '@/lib/types';
+import { z } from 'zod';
 
 async function getRallyData(rid: string, current_stage_no: string): Promise<{ allStageResults: Record<string, StageResult[]>, overallResults: OverallResult[], itinerary: ItineraryItem[], rallyName: string }> {
     const itineraryResponse = await fetch(`https://www.rallylive.net/mobileapp/v1/rally-itinerary.php?rid=${rid}`);
