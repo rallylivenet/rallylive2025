@@ -46,7 +46,15 @@ export default function AskAiAboutRallyDialog({ rid, stage_no, rallyName, stageN
   }, [messages]);
 
   const handleAsk = async () => {
-    if (!question.trim()) return;
+    if (!question.trim() || !rallyName || !stageName) {
+        toast({
+            variant: 'destructive',
+            title: 'Missing Information',
+            description: 'Could not determine the rally context. Please refresh the page.',
+        });
+        return;
+    }
+
 
     setIsAsking(true);
     setMessages(prev => [...prev, {role: 'user', content: question}]);
