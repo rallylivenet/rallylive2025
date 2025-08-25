@@ -264,8 +264,17 @@ const ResultsTable = ({ data, type }: { data: (StageResult[] | OverallResult[]),
                   {item.rank}
                 </TableCell>
                 <TableCell className="p-1 align-top">
-                  <div className="font-bold whitespace-nowrap">{`${item.driver_surname.toUpperCase()}`}</div>
-                  <div className="text-muted-foreground/80">#{item.door_no} {item.car_brand}</div>
+                  {/* Compact view for mobile */}
+                  <div className="md:hidden">
+                    <div className="font-bold whitespace-nowrap">{`${item.driver_surname.toUpperCase()}`}</div>
+                    <div className="text-muted-foreground/80">#{item.door_no} {item.car_brand}</div>
+                  </div>
+                  {/* Detailed view for wider screens */}
+                  <div className="hidden md:block">
+                    <div className="font-bold whitespace-nowrap">{`${item.driver_name} ${item.driver_surname}`}</div>
+                    <div className="text-muted-foreground/90 text-[11px] whitespace-nowrap">{`${item.codriver_name} ${item.codriver_surname}`}</div>
+                    <div className="text-muted-foreground/80 text-[11px]">#{item.door_no} {item.car_brand} {item.car_version}</div>
+                  </div>
                 </TableCell>
                 <TableCell className="p-1 text-right font-mono align-top">
                     <div>{type === 'stage' ? (item as StageResult).stage_time : (item as OverallResult).total_time}</div>
