@@ -170,3 +170,11 @@ export const RallyUpdateOutputSchema = z.object({
     notification: z.string().describe('The generated push notification message (max 150 characters).'),
 });
 export type RallyUpdateOutput = z.infer<typeof RallyUpdateOutputSchema>;
+
+export const AdminPushFormSchema = RallyUpdateInputSchema.extend({
+    stageWinnerDriver: z.string().optional(),
+    stageWinnerTime: z.string().optional(),
+    overallLeaderDriver: z.string().optional(),
+    overallLeaderLead: z.string().optional(),
+});
+export type AdminPushFormValues = z.infer<typeof AdminPushFormSchema>;
