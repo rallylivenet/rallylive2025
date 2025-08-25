@@ -27,6 +27,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import ItinerarySheet from '@/components/ItinerarySheet';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 
 export default function RallyStagePage() {
@@ -206,33 +207,34 @@ export default function RallyStagePage() {
         </Card>
       )}
 
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Stage Results {selectedClass !== 'All' && `(${selectedClass})`}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {loading ? (
-              <ResultsTableSkeleton />
-            ) : (
-              <ResultsTable data={stageResults} type="stage" />
-            )}
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Overall Standings {selectedClass !== 'All' && `(${selectedClass})`}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {loading ? (
-              <ResultsTableSkeleton />
-            ) : (
-              <ResultsTable data={overallResults} type="overall" />
-            )}
-          </CardContent>
-        </Card>
-      </div>
+      <Tabs defaultValue="stage" className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="stage">Stage Results {selectedClass !== 'All' && `(${selectedClass})`}</TabsTrigger>
+          <TabsTrigger value="overall">Overall Standings {selectedClass !== 'All' && `(${selectedClass})`}</TabsTrigger>
+        </TabsList>
+        <TabsContent value="stage">
+            <Card>
+                <CardContent className="p-0">
+                     {loading ? (
+                        <ResultsTableSkeleton />
+                    ) : (
+                        <ResultsTable data={stageResults} type="stage" />
+                    )}
+                </CardContent>
+            </Card>
+        </TabsContent>
+        <TabsContent value="overall">
+            <Card>
+                <CardContent className="p-0">
+                    {loading ? (
+                        <ResultsTableSkeleton />
+                    ) : (
+                        <ResultsTable data={overallResults} type="overall" />
+                    )}
+                </CardContent>
+            </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
@@ -256,17 +258,17 @@ const ResultsTable = ({ data, type }: { data: (StageResult[] | OverallResult[]),
           <TableBody>
             {data.map((item, index) => (
             <TableRow key={index}>
-                <TableCell>
+                <TableCell className="p-2 sm:p-4">
                   <div className="font-bold">{item.rank}</div>
                   <div className="text-xs text-muted-foreground">#{item.door_no}</div>
                 </TableCell>
-                <TableCell>
+                <TableCell className="p-2 sm:p-4">
                   <div className="font-medium">{`${item.driver_name.charAt(0)}. ${item.driver_surname}`}</div>
                   <div className="text-sm text-muted-foreground">{`${item.codriver_name.charAt(0)}. ${item.codriver_surname}`}</div>
                   <div className="text-xs text-muted-foreground/80">{item.car_brand}</div>
                 </TableCell>
-                <TableCell className="text-right font-mono">{type === 'stage' ? (item as StageResult).stage_time : (item as OverallResult).total_time}</TableCell>
-                <TableCell className="text-right font-mono hidden sm:table-cell">{item.diff_to_leader}</TableCell>
+                <TableCell className="p-2 sm:p-4 text-right font-mono text-xs sm:text-sm">{type === 'stage' ? (item as StageResult).stage_time : (item as OverallResult).total_time}</TableCell>
+                <TableCell className="p-2 sm:p-4 text-right font-mono hidden sm:table-cell">{item.diff_to_leader}</TableCell>
             </TableRow>
             ))}
         </TableBody>
@@ -290,3 +292,5 @@ const ResultsTableSkeleton = () => {
         </div>
     )
 }
+
+    
