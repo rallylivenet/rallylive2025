@@ -89,7 +89,11 @@ export default function RallyStagePage() {
         
         if (stageNameData && stageNameData.etaplar && Array.isArray(stageNameData.etaplar)) {
             const currentStageInfo = stageNameData.etaplar.find((e: any) => e.no === stage_no);
-            setStageName(currentStageInfo ? `SS${stage_no} ${currentStageInfo.name}` : `Stage ${stage_no}`);
+            if (currentStageInfo) {
+              setStageName(`SS${stage_no} ${currentStageInfo.name}`);
+            } else {
+              setStageName(`Stage ${stage_no}`);
+            }
         } else {
              setStageName(`Stage ${stage_no}`);
         }
@@ -339,5 +343,3 @@ const ResultsTableSkeleton = () => {
         </div>
     )
 }
-
-    
