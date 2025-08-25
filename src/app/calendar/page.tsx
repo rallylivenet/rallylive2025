@@ -33,7 +33,7 @@ export default function CalendarPage() {
       const year = selectedDate.getFullYear();
       const month = selectedDate.getMonth() + 1;
       try {
-        const response = await fetch(`https://www.rallylive.net/mobileapp/v1/get-events.php?year=${year}&month=${String(month).padStart(2, '0')}`);
+        const response = await fetch(`https://www.rallylive.net/mobileapp/v1/get-events.php?year=${year}&month=${month}`);
         if (!response.ok) {
           throw new Error('Failed to fetch events');
         }
