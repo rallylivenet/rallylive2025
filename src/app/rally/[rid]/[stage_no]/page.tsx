@@ -145,42 +145,46 @@ export default function RallyStagePage() {
 
   return (
     <div className="container mx-auto px-2 sm:px-4 lg:px-8 py-4 md:py-8">
-      <div className="mb-4 flex flex-wrap gap-2 justify-between items-center">
-        <div className="flex gap-2">
-            <Link href="/">
-              <Button variant="outline" size="sm">
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Back
-              </Button>
-            </Link>
-            <ItinerarySheet />
+      <div className="mb-4 relative flex justify-center items-center">
+        <div className="absolute left-0">
+          <Link href="/">
+            <Button variant="outline" size="sm">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back
+            </Button>
+          </Link>
         </div>
-        <h2 className="text-lg md:text-xl font-bold text-right truncate">{loading ? <Skeleton className="h-7 w-48" /> : stageName}</h2>
+        <h2 className="text-lg md:text-xl font-bold text-center truncate">
+            {loading ? <Skeleton className="h-7 w-48" /> : stageName}
+        </h2>
       </div>
 
-       <div className="mb-4 flex flex-wrap gap-4 items-center">
-        <Button onClick={handleGenerateSummary} disabled={isSummarizing || loading} size="sm">
-          <Sparkles className="mr-2 h-4 w-4" />
-          {isSummarizing ? 'Generating...' : 'AI Summary'}
-        </Button>
-        {categories.length > 0 && (
-            <div className="flex items-center gap-2">
-                <Filter className="h-5 w-5 text-muted-foreground" />
-                <Select value={selectedClass} onValueChange={setSelectedClass}>
-                    <SelectTrigger className="w-[150px] h-9">
-                        <SelectValue placeholder="Filter by class" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="All">All Classes</SelectItem>
-                        {categories.map((cat) => (
-                            <SelectItem key={cat.category} value={cat.category}>
-                                {cat.category} ({cat.occurrence})
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
+       <div className="mb-4 flex flex-wrap gap-4 items-center justify-between">
+            <div className="flex items-center gap-2 md:gap-4">
+                <ItinerarySheet />
+                {categories.length > 0 && (
+                    <div className="flex items-center gap-2">
+                        <Filter className="h-5 w-5 text-muted-foreground" />
+                        <Select value={selectedClass} onValueChange={setSelectedClass}>
+                            <SelectTrigger className="w-[150px] h-9">
+                                <SelectValue placeholder="Filter by class" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="All">All Classes</SelectItem>
+                                {categories.map((cat) => (
+                                    <SelectItem key={cat.category} value={cat.category}>
+                                        {cat.category} ({cat.occurrence})
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                )}
             </div>
-        )}
+            <Button onClick={handleGenerateSummary} disabled={isSummarizing || loading} size="sm">
+                <Sparkles className="mr-2 h-4 w-4" />
+                {isSummarizing ? 'Generating...' : 'AI Summary'}
+            </Button>
       </div>
 
       {(isSummarizing || summary) && (
