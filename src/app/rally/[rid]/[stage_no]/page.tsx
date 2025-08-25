@@ -255,8 +255,6 @@ const ResultsTable = ({ data, type }: { data: (StageResult[] | OverallResult[]),
               <TableHead className="w-[50px] p-2 text-center">No</TableHead>
               <TableHead className="p-2">Driver</TableHead>
               <TableHead className="text-right p-2">Time</TableHead>
-              <TableHead className="text-right p-2 whitespace-nowrap">Diff.Prev</TableHead>
-              <TableHead className="text-right p-2 whitespace-nowrap">Diff.Leader</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -273,13 +271,11 @@ const ResultsTable = ({ data, type }: { data: (StageResult[] | OverallResult[]),
                 </TableCell>
                 <TableCell className="p-2 text-right font-mono text-sm sm:text-base align-top">
                     <div>{type === 'stage' ? (item as StageResult).stage_time : (item as OverallResult).total_time}</div>
+                    <div className="text-xs text-muted-foreground">
+                        <div>{item.diff_to_previous}</div>
+                        <div>{item.diff_to_leader}</div>
+                    </div>
                      {type === 'overall' && (item as OverallResult).penalty_time !== '00:00.0' && <div className="text-xs text-destructive">P: {(item as OverallResult).penalty_time}</div>}
-                </TableCell>
-                 <TableCell className="p-2 text-right font-mono text-xs sm:text-sm align-top">
-                    <div>{item.diff_to_previous}</div>
-                </TableCell>
-                <TableCell className="p-2 text-right font-mono text-xs sm:text-sm align-top">
-                    <div>{item.diff_to_leader}</div>
                 </TableCell>
             </TableRow>
             ))}
