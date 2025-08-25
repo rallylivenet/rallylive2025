@@ -124,24 +124,34 @@ export default function NavigationMenu() {
             <span>Contact</span>
           </DropdownMenuItem>
         </Link>
-        <Link href="/privacy" passHref>
-          <DropdownMenuItem>
-            <FileText className="mr-2 h-4 w-4" />
-            <span>Privacy Policy</span>
-          </DropdownMenuItem>
-        </Link>
-        <Link href="/terms" passHref>
-          <DropdownMenuItem>
-            <FileText className="mr-2 h-4 w-4" />
-            <span>Terms of Service</span>
-          </DropdownMenuItem>
-        </Link>
-        <Link href="/impressum" passHref>
-          <DropdownMenuItem>
+        <DropdownMenuSub>
+          <DropdownMenuSubTrigger>
             <FileText className="mr-2 h-4 w-4" />
             <span>Impressum</span>
-          </DropdownMenuItem>
-        </Link>
+          </DropdownMenuSubTrigger>
+          <DropdownMenuPortal>
+            <DropdownMenuSubContent>
+                <Link href="/impressum" passHref>
+                    <DropdownMenuItem>
+                    <ChevronRight className="mr-2 h-4 w-4" />
+                    Impressum
+                    </DropdownMenuItem>
+                </Link>
+                <Link href="/privacy" passHref>
+                    <DropdownMenuItem>
+                    <ChevronRight className="mr-2 h-4 w-4" />
+                    Privacy Policy
+                    </DropdownMenuItem>
+                </Link>
+                <Link href="/terms" passHref>
+                    <DropdownMenuItem>
+                    <ChevronRight className="mr-2 h-4 w-4" />
+                    Terms of Service
+                    </DropdownMenuItem>
+                </Link>
+            </DropdownMenuSubContent>
+          </DropdownMenuPortal>
+        </DropdownMenuSub>
         <DropdownMenuSeparator />
         <Link href="/login" passHref>
           <DropdownMenuItem>
