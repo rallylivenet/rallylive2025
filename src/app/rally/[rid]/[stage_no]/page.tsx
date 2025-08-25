@@ -246,6 +246,17 @@ const ResultsTable = ({ data, type }: { data: (StageResult[] | OverallResult[]),
     if (!data || data.length === 0) {
         return <p className="p-4 text-center text-muted-foreground text-sm">No results available.</p>;
     }
+  
+    const formatPenalty = (penalty: string): string => {
+        if (!penalty || penalty === '00:00.0') return '';
+        
+        const parts = penalty.split(':');
+        const minutes = parseInt(parts[0], 10);
+        const seconds = parseFloat(parts[1]);
+        const totalSeconds = minutes * 60 + seconds;
+
+        return `+${totalSeconds.toFixed(1)}s`;
+    }
 
   return (
     <div className="overflow-x-auto">
@@ -259,7 +270,7 @@ const ResultsTable = ({ data, type }: { data: (StageResult[] | OverallResult[]),
           </TableHeader>
           <TableBody>
             {data.map((item, index) => {
-              const hasPenalty = type === 'overall' && (item as OverallResult).penalty_time && (item as OverallResult).penalty_time !== '00:00.0';
+              const penaltyStr = type === 'overall' ? formatPenalty((item as OverallResult).penalty_time) : '';
               return (
                 <TableRow key={index}>
                     <TableCell className="p-1 text-center font-bold align-top">
@@ -271,7 +282,7 @@ const ResultsTable = ({ data, type }: { data: (StageResult[] | OverallResult[]),
                         <div className="font-bold whitespace-nowrap">{`${item.driver_surname.toUpperCase()}`}</div>
                         <div className="text-muted-foreground/80 flex items-center gap-2">
                            <span>#{item.door_no} {item.car_version}</span>
-                           {hasPenalty && <span className="text-destructive font-bold">{(item as OverallResult).penalty_time.replace(/00:|0/g, '')}</span>}
+                           {penaltyStr && <span className="text-destructive font-bold">{penaltyStr}</span>}
                         </div>
                       </div>
                       {/* Detailed view for wider screens */}
@@ -280,7 +291,7 @@ const ResultsTable = ({ data, type }: { data: (StageResult[] | OverallResult[]),
                         <div className="text-muted-foreground/90 text-[11px] whitespace-nowrap">{`${item.codriver_name} ${item.codriver_surname}`}</div>
                         <div className="text-muted-foreground/80 text-[11px] flex items-center gap-2">
                           <span>#{item.door_no} {item.car_brand} {item.car_version}</span>
-                          {hasPenalty && <span className="text-destructive font-bold">{(item as OverallResult).penalty_time.replace(/00:|0/g, '')}</span>}
+                          {penaltyStr && <span className="text-destructive font-bold">{penaltyStr}</span>}
                         </div>
                       </div>
                     </TableCell>
@@ -317,7 +328,3 @@ const ResultsTableSkeleton = () => {
         </div>
     )
 }
-
-    
-
-    
