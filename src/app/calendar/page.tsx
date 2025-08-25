@@ -18,6 +18,20 @@ const monthNames = [
   "July", "August", "September", "October", "November", "December"
 ];
 
+const EventItem = ({ event }: { event: RallyEvent }) => {
+    const content = (
+        <div className="p-3 border rounded-md bg-card flex items-center justify-between hover:bg-accent transition-colors">
+            <span className="font-semibold">{event.RalliAdi}</span>
+            <span className="text-sm text-muted-foreground">{new Date(event.Tarih).toLocaleDateString()}</span>
+        </div>
+    );
+
+    if (event.id && event.Link) {
+        return <Link href={`/rally/${event.id}`}>{content}</Link>;
+    }
+    return <div className="cursor-default">{content}</div>;
+};
+
 export default function CalendarPage() {
   const { toast } = useToast();
   const [events, setEvents] = React.useState<RallyEvent[]>([]);
@@ -182,10 +196,7 @@ export default function CalendarPage() {
                       {upcomingEvents.length > 0 ? (
                         <div className="space-y-3">
                           {upcomingEvents.map(event => (
-                            <div key={event.Link} className="p-3 border rounded-md bg-card flex items-center justify-between">
-                              <span className="font-semibold">{event.RalliAdi}</span>
-                              <span className="text-sm text-muted-foreground">{new Date(event.Tarih).toLocaleDateString()}</span>
-                            </div>
+                            <EventItem key={event.id || event.Link} event={event} />
                           ))}
                         </div>
                       ) : (
@@ -197,10 +208,7 @@ export default function CalendarPage() {
                        {pastEvents.length > 0 ? (
                         <div className="space-y-3">
                           {pastEvents.map(event => (
-                             <div key={event.Link} className="p-3 border rounded-md bg-card flex items-center justify-between">
-                              <span className="font-semibold">{event.RalliAdi}</span>
-                              <span className="text-sm text-muted-foreground">{new Date(event.Tarih).toLocaleDateString()}</span>
-                            </div>
+                            <EventItem key={event.id || event.Link} event={event} />
                           ))}
                         </div>
                       ) : (
@@ -213,10 +221,7 @@ export default function CalendarPage() {
                     <h4 className="font-bold text-lg mb-4">Events for {monthNames[selectedDate.getMonth()]} {selectedDate.getFullYear()}</h4>
                     <div className="space-y-3">
                       {events.map(event => (
-                         <div key={event.Link} className="p-3 border rounded-md bg-card flex items-center justify-between">
-                          <span className="font-semibold">{event.RalliAdi}</span>
-                          <span className="text-sm text-muted-foreground">{new Date(event.Tarih).toLocaleDateString()}</span>
-                        </div>
+                         <EventItem key={event.id || event.Link} event={event} />
                       ))}
                     </div>
                   </div>
