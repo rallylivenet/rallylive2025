@@ -34,17 +34,15 @@ export default function CalendarPage() {
       const month = selectedDate.getMonth() + 1;
       try {
         const url = `https://www.rallylive.net/mobileapp/v1/get-events.php?year=${year}&month=${String(month).padStart(2, '0')}`;
-        console.log('Fetching calendar events from:', url);
         const response = await fetch(url);
         if (!response.ok) {
           throw new Error('Failed to fetch events');
         }
         const data = await response.json();
-        // The API returns an object with an 'events' property which is an array
-        setEvents(Array.isArray(data.events) ? data.events : []);
+        setEvents(data.events && Array.isArray(data.events) ? data.events : []);
       } catch (error) {
         console.error('Failed to fetch events:', error);
-        setEvents([]); // Reset to empty array on error
+        setEvents([]); 
         toast({
           variant: 'destructive',
           title: 'Error fetching events',
@@ -83,6 +81,8 @@ export default function CalendarPage() {
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
+
+  const isCurrentMonth = selectedDate.getFullYear() === today.getFullYear() && selectedDate.getMonth() === today.getMonth();
 
   const upcomingEvents = Array.isArray(events) ? events.filter(event => new Date(event.Tarih) >= today) : [];
   const pastEvents = Array.isArray(events) ? events.filter(event => new Date(event.Tarih) < today) : [];
@@ -175,38 +175,52 @@ export default function CalendarPage() {
                 </div>
             ) : (
               events.length > 0 ? (
-                <div className="grid md:grid-cols-2 gap-8">
-                  <div>
-                    <h4 className="font-bold text-lg mb-4">Upcoming Rallies</h4>
-                    {upcomingEvents.length > 0 ? (
-                      <div className="space-y-3">
-                        {upcomingEvents.map(event => (
-                          <div key={event.Link} className="p-3 border rounded-md bg-card flex items-center justify-between">
-                            <span className="font-semibold">{event.RalliAdi}</span>
-                            <span className="text-sm text-muted-foreground">{new Date(event.Tarih).toLocaleDateString()}</span>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <p className="text-muted-foreground text-sm">No upcoming rallies for this month.</p>
-                    )}
+                isCurrentMonth ? (
+                  <div className="grid md:grid-cols-2 gap-8">
+                    <div>
+                      <h4 className="font-bold text-lg mb-4">Upcoming Rallies</h4>
+                      {upcomingEvents.length > 0 ? (
+                        <div className="space-y-3">
+                          {upcomingEvents.map(event => (
+                            <div key={event.Link} className="p-3 border rounded-md bg-card flex items-center justify-between">
+                              <span className="font-semibold">{event.RalliAdi}</span>
+                              <span className="text-sm text-muted-foreground">{new Date(event.Tarih).toLocaleDateString()}</span>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-muted-foreground text-sm">No upcoming rallies for this month.</p>
+                      )}
+                    </div>
+                     <div>
+                      <h4 className="font-bold text-lg mb-4">Past Rallies</h4>
+                       {pastEvents.length > 0 ? (
+                        <div className="space-y-3">
+                          {pastEvents.map(event => (
+                             <div key={event.Link} className="p-3 border rounded-md bg-card flex items-center justify-between">
+                              <span className="font-semibold">{event.RalliAdi}</span>
+                              <span className="text-sm text-muted-foreground">{new Date(event.Tarih).toLocaleDateString()}</span>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-muted-foreground text-sm">No past rallies for this month.</p>
+                      )}
+                    </div>
                   </div>
+                ) : (
                    <div>
-                    <h4 className="font-bold text-lg mb-4">Past Rallies</h4>
-                     {pastEvents.length > 0 ? (
-                      <div className="space-y-3">
-                        {pastEvents.map(event => (
-                           <div key={event.Link} className="p-3 border rounded-md bg-card flex items-center justify-between">
-                            <span className="font-semibold">{event.RalliAdi}</span>
-                            <span className="text-sm text-muted-foreground">{new Date(event.Tarih).toLocaleDateString()}</span>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <p className="text-muted-foreground text-sm">No past rallies for this month.</p>
-                    )}
+                    <h4 className="font-bold text-lg mb-4">Events for {monthNames[selectedDate.getMonth()]} {selectedDate.getFullYear()}</h4>
+                    <div className="space-y-3">
+                      {events.map(event => (
+                         <div key={event.Link} className="p-3 border rounded-md bg-card flex items-center justify-between">
+                          <span className="font-semibold">{event.RalliAdi}</span>
+                          <span className="text-sm text-muted-foreground">{new Date(event.Tarih).toLocaleDateString()}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )
               ) : (
                 <div className="text-center py-10">
                   <CalendarIcon className="mx-auto h-12 w-12 text-muted-foreground" />
