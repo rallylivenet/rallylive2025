@@ -16,7 +16,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import type { StageResult, OverallResult, RallyCategory, ItineraryItem } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
-import { ArrowLeft, Sparkles, Filter, Users, Flag } from 'lucide-react';
+import { ArrowLeft, Sparkles, Filter, Users, Flag, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { summarizeStageResults } from '@/ai/flows/summarize-stage-results';
 import {
@@ -91,7 +91,7 @@ export default function RallyStagePage() {
         if (currentStageInfo) {
           setStageName(`SS${stage_no} ${currentStageInfo.name}`);
         } else {
-          setStageName(`Stage ${stage_no}`);
+          setStageName(`SS${stage_no}`);
         }
         
         setStageResults(stageResultsData);
@@ -139,6 +139,35 @@ export default function RallyStagePage() {
         });
     } finally {
         setIsSummarizing(false);
+    }
+  };
+
+  const handleShareSummary = async () => {
+    if (!summary) return;
+
+    const shareData = {
+      title: `Rally Report: ${stageName}`,
+      text: summary,
+      url: window.location.href,
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(summary);
+        toast({
+          title: "Copied to clipboard!",
+          description: "The summary has been copied to your clipboard.",
+        });
+      }
+    } catch (error) {
+      console.error("Failed to share:", error);
+      toast({
+        variant: "destructive",
+        title: "Sharing Failed",
+        description: "Could not share the summary.",
+      });
     }
   };
 
@@ -190,11 +219,17 @@ export default function RallyStagePage() {
 
       {(isSummarizing || summary) && (
         <Card className="mb-4 bg-secondary">
-          <CardHeader className="p-4">
+          <CardHeader className="p-4 flex flex-row items-center justify-between">
             <CardTitle className="text-base flex items-center">
               <Sparkles className="mr-2 h-4 w-4 text-primary" />
               AI Stage Summary
             </CardTitle>
+            {!isSummarizing && summary && (
+              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleShareSummary}>
+                <Share2 className="h-4 w-4" />
+                <span className="sr-only">Share summary</span>
+              </Button>
+            )}
           </CardHeader>
           <CardContent className="p-4 pt-0">
             {isSummarizing ? (
@@ -340,3 +375,4 @@ const ResultsTableSkeleton = () => {
     )
 }
 
+    
