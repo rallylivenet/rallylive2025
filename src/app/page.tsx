@@ -3,6 +3,7 @@ import Image from 'next/image';
 import AdMob from '@/components/AdMob';
 import RallyNews from '@/components/RallyNews';
 import NavigationMenu from '@/components/NavigationMenu';
+import LiveRallies from '@/components/LiveRallies';
 
 export default function Home() {
   return (
@@ -29,9 +30,14 @@ export default function Home() {
         <section className="mb-12">
           <RallySlider />
         </section>
-        <section className="mb-12">
-          <RallyNews />
-        </section>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 mb-12">
+          <section className="lg:col-span-2">
+            <RallyNews />
+          </section>
+          <section>
+            <LiveRallies />
+          </section>
+        </div>
         <section className="w-full">
           <AdMob adSlot="9476568198" />
         </section>

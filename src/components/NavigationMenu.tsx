@@ -32,12 +32,6 @@ export default function NavigationMenu() {
             <span>Live Rallies</span>
           </DropdownMenuItem>
         </Link>
-        <Link href="/past-rallies" passHref>
-          <DropdownMenuItem>
-            <History className="mr-2 h-4 w-4" />
-            <span>Past Rallies</span>
-          </DropdownMenuItem>
-        </Link>
         <Link href="/calendar" passHref>
           <DropdownMenuItem>
             <Calendar className="mr-2 h-4 w-4" />
