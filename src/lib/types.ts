@@ -5,6 +5,7 @@
 
 
 
+
 export interface Rally {
   id: string;
   name: string;
@@ -138,7 +139,11 @@ export interface RallyCategory {
 }
     
 export interface RallyEvent {
+  id?: number;
   RalliAdi: string;
   Tarih: string;
   Link: string;
+  ridFlag?: string | null;
+  sonEtap?: string | null;
+  leftStage?: number | null;
 }
