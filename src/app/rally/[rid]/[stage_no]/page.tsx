@@ -3,6 +3,7 @@
 
 import * as React from 'react';
 import { useParams } from 'next/navigation';
+import Image from 'next/image';
 import {
   Table,
   TableBody,
@@ -27,6 +28,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import ItinerarySheet from '@/components/ItinerarySheet';
+import NavigationMenu from '@/components/NavigationMenu';
 
 export default function RallyStagePage() {
   const params = useParams();
@@ -178,111 +180,139 @@ export default function RallyStagePage() {
 
 
   return (
-    <div className="container mx-auto px-2 sm:px-4 lg:px-8 py-4 md:py-8">
-       <div className="mb-4 relative flex justify-center items-center h-10">
-        <div className="absolute left-0">
-          <Link href="/">
+    <div className="flex flex-col min-h-screen bg-background">
+      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex h-16 items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <Link href="/">
+              <Image
+                src="https://rallylive.net/wp-content/uploads/cropped-rallylive-logo-64-ico.png"
+                alt="RallyLive Net Logo"
+                width={32}
+                height={32}
+                className="h-8 w-8"
+                unoptimized
+              />
+            </Link>
+            <Link href="/">
+              <h1 className="text-2xl font-bold font-headline text-foreground">
+                RallyLive
+              </h1>
+            </Link>
+          </div>
+          <NavigationMenu />
+        </div>
+      </header>
+      <main className="flex-grow container mx-auto px-2 sm:px-4 lg:px-8 py-4 md:py-8">
+        <div className="mb-4 relative flex justify-between items-center h-10">
+          <Link href="/calendar">
             <Button variant="outline" size="sm">
               <ArrowLeft className="mr-2 h-4 w-4" />
-              Back
+              Back to Calendar
             </Button>
           </Link>
+          <h2 className="text-lg md:text-xl font-bold text-center truncate px-4">
+              {loading ? <Skeleton className="h-7 w-48" /> : stageName}
+          </h2>
+          <div className="w-[150px]"></div> {/* Spacer to balance the back button */}
         </div>
-        <h2 className="text-lg md:text-xl font-bold text-center truncate px-16">
-            {loading ? <Skeleton className="h-7 w-48" /> : stageName}
-        </h2>
-      </div>
 
-       <div className="mb-4 flex flex-wrap gap-4 items-center justify-between">
-            <div className="flex items-center gap-2 md:gap-4">
-                <ItinerarySheet />
-                {categories.length > 0 && (
-                    <div className="flex items-center gap-2">
-                        <Filter className="h-5 w-5 text-muted-foreground" />
-                        <Select value={selectedClass} onValueChange={setSelectedClass}>
-                            <SelectTrigger className="w-[150px] h-9">
-                                <SelectValue placeholder="Filter by class" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="All">All Classes</SelectItem>
-                                {categories.map((cat) => (
-                                    <SelectItem key={cat.category} value={cat.category}>
-                                        {cat.category} ({cat.occurrence})
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                )}
-            </div>
-             <Button onClick={handleGenerateSummary} disabled={isSummarizing || loading} size="sm" className="md:w-auto w-10 h-9 p-0 md:px-3">
-                <Sparkles className="h-4 w-4 md:mr-2" />
-                <span className="hidden md:inline">{isSummarizing ? 'Generating...' : 'AI Summary'}</span>
-                 <span className="sr-only">AI Summary</span>
-            </Button>
-      </div>
-
-      {(isSummarizing || summary) && (
-        <Card className="mb-4 bg-secondary">
-          <CardHeader className="p-4 flex flex-row items-center justify-between">
-            <CardTitle className="text-base flex items-center">
-              <Sparkles className="mr-2 h-4 w-4 text-primary" />
-              AI Stage Summary
-            </CardTitle>
-            {!isSummarizing && summary && (
-              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleShareSummary}>
-                <Share2 className="h-4 w-4" />
-                <span className="sr-only">Share summary</span>
-              </Button>
-            )}
-          </CardHeader>
-          <CardContent className="p-4 pt-0">
-            {isSummarizing ? (
-              <div className="space-y-2">
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-3/4" />
+        <div className="mb-4 flex flex-wrap gap-4 items-center justify-between">
+              <div className="flex items-center gap-2 md:gap-4">
+                  <ItinerarySheet />
+                  {categories.length > 0 && (
+                      <div className="flex items-center gap-2">
+                          <Filter className="h-5 w-5 text-muted-foreground" />
+                          <Select value={selectedClass} onValueChange={setSelectedClass}>
+                              <SelectTrigger className="w-[150px] h-9">
+                                  <SelectValue placeholder="Filter by class" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                  <SelectItem value="All">All Classes</SelectItem>
+                                  {categories.map((cat) => (
+                                      <SelectItem key={cat.category} value={cat.category}>
+                                          {cat.category} ({cat.occurrence})
+                                      </SelectItem>
+                                  ))}
+                              </SelectContent>
+                          </Select>
+                      </div>
+                  )}
               </div>
-            ) : (
-              <p className="text-sm text-secondary-foreground">{summary}</p>
-            )}
-          </CardContent>
-        </Card>
-      )}
+              <Button onClick={handleGenerateSummary} disabled={isSummarizing || loading} size="sm" className="md:w-auto w-10 h-9 p-0 md:px-3">
+                  <Sparkles className="h-4 w-4 md:mr-2" />
+                  <span className="hidden md:inline">{isSummarizing ? 'Generating...' : 'AI Summary'}</span>
+                  <span className="sr-only">AI Summary</span>
+              </Button>
+        </div>
 
-      <div className="grid grid-cols-2 gap-2 md:gap-4">
-        <Card>
-            <CardHeader className="p-2 md:p-4 text-center">
-                <CardTitle className="flex items-center justify-center text-sm md:text-base">
-                    <Flag className="mr-2 h-4 w-4" />
-                    Stage {selectedClass !== 'All' && `(${selectedClass})`}
-                </CardTitle>
+        {(isSummarizing || summary) && (
+          <Card className="mb-4 bg-secondary">
+            <CardHeader className="p-4 flex flex-row items-center justify-between">
+              <CardTitle className="text-base flex items-center">
+                <Sparkles className="mr-2 h-4 w-4 text-primary" />
+                AI Stage Summary
+              </CardTitle>
+              {!isSummarizing && summary && (
+                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleShareSummary}>
+                  <Share2 className="h-4 w-4" />
+                  <span className="sr-only">Share summary</span>
+                </Button>
+              )}
             </CardHeader>
-            <CardContent className="p-0">
-                 {loading ? (
-                    <ResultsTableSkeleton />
-                ) : (
-                    <ResultsTable data={stageResults} type="stage" />
-                )}
+            <CardContent className="p-4 pt-0">
+              {isSummarizing ? (
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-3/4" />
+                </div>
+              ) : (
+                <p className="text-sm text-secondary-foreground">{summary}</p>
+              )}
             </CardContent>
-        </Card>
+          </Card>
+        )}
 
-        <Card>
-            <CardHeader className="p-2 md:p-4 text-center">
-                <CardTitle className="flex items-center justify-center text-sm md:text-base">
-                    <Users className="mr-2 h-4 w-4" />
-                    Overall {selectedClass !== 'All' && `(${selectedClass})`}
-                </CardTitle>
-            </CardHeader>
-            <CardContent className="p-0">
-                {loading ? (
-                    <ResultsTableSkeleton />
-                ) : (
-                    <ResultsTable data={overallResults} type="overall" />
-                )}
-            </CardContent>
-        </Card>
-      </div>
+        <div className="grid grid-cols-2 gap-2 md:gap-4">
+          <Card>
+              <CardHeader className="p-2 md:p-4 text-center">
+                  <CardTitle className="flex items-center justify-center text-sm md:text-base">
+                      <Flag className="mr-2 h-4 w-4" />
+                      Stage {selectedClass !== 'All' && `(${selectedClass})`}
+                  </CardTitle>
+              </CardHeader>
+              <CardContent className="p-0">
+                  {loading ? (
+                      <ResultsTableSkeleton />
+                  ) : (
+                      <ResultsTable data={stageResults} type="stage" />
+                  )}
+              </CardContent>
+          </Card>
+
+          <Card>
+              <CardHeader className="p-2 md:p-4 text-center">
+                  <CardTitle className="flex items-center justify-center text-sm md:text-base">
+                      <Users className="mr-2 h-4 w-4" />
+                      Overall {selectedClass !== 'All' && `(${selectedClass})`}
+                  </CardTitle>
+              </CardHeader>
+              <CardContent className="p-0">
+                  {loading ? (
+                      <ResultsTableSkeleton />
+                  ) : (
+                      <ResultsTable data={overallResults} type="overall" />
+                  )}
+              </CardContent>
+          </Card>
+        </div>
+      </main>
+      <footer className="py-6 border-t mt-auto">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm text-muted-foreground">
+          <p>&copy; {new Date().getFullYear()} RallyLive Net. All rights reserved.</p>
+        </div>
+      </footer>
     </div>
   );
 }
@@ -379,5 +409,3 @@ const ResultsTableSkeleton = () => {
         </div>
     )
 }
-
-    
