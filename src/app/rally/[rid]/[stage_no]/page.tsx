@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import type { StageResult, OverallResult, RallyCategory, LastStageFromApi } from '@/lib/types';
+import type { StageResult, OverallResult, RallyCategory, ItineraryItem } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { ArrowLeft, Sparkles, Filter, Users, Flag } from 'lucide-react';
@@ -73,29 +73,25 @@ export default function RallyStagePage() {
       try {
         const classParam = selectedClass === 'All' ? '' : `&cls=${selectedClass}`;
 
-        const [stageResultsResponse, overallResultsResponse, stageNameResponse] = await Promise.all([
+        const [stageResultsResponse, overallResultsResponse, itineraryResponse] = await Promise.all([
           fetch(`https://www.rallylive.net/mobileapp/v1/json-stagetimes.php?rid=${rid}&stage_no=${stage_no}${classParam}`),
           fetch(`https://www.rallylive.net/mobileapp/v1/json-overall.php?rid=${rid}&stage_no=${stage_no}${classParam}`),
-          fetch(`https://www.rallylive.net/mobileapp/v1/json-sonetap.php?rid=${rid}`)
+          fetch(`https://www.rallylive.net/mobileapp/v1/rally-itinerary.php?rid=${rid}`)
         ]);
 
         if (!stageResultsResponse.ok) throw new Error('Failed to fetch stage results');
         if (!overallResultsResponse.ok) throw new Error('Failed to fetch overall results');
-        if (!stageNameResponse.ok) throw new Error('Failed to fetch stage name');
+        if (!itineraryResponse.ok) throw new Error('Failed to fetch itinerary');
 
         const stageResultsData: StageResult[] = await stageResultsResponse.json();
         const overallResultsData: OverallResult[] = await overallResultsResponse.json();
-        const stageNameData: LastStageFromApi = await stageNameResponse.json();
+        const itineraryData: ItineraryItem[] = await itineraryResponse.json();
         
-        if (stageNameData && stageNameData.etaplar && Array.isArray(stageNameData.etaplar)) {
-            const currentStageInfo = stageNameData.etaplar.find((e: any) => e.no === stage_no);
-            if (currentStageInfo) {
-              setStageName(`SS${stage_no} ${currentStageInfo.name}`);
-            } else {
-              setStageName(`Stage ${stage_no}`);
-            }
+        const currentStageInfo = itineraryData.find((e) => e.no === stage_no);
+        if (currentStageInfo) {
+          setStageName(`SS${stage_no} ${currentStageInfo.name}`);
         } else {
-             setStageName(`Stage ${stage_no}`);
+          setStageName(`Stage ${stage_no}`);
         }
         
         setStageResults(stageResultsData);
@@ -343,3 +339,4 @@ const ResultsTableSkeleton = () => {
         </div>
     )
 }
+
