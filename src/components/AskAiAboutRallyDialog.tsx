@@ -13,12 +13,13 @@ import {
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Bot, MessageCircleQuestion, Send, Sparkles, User, X } from 'lucide-react';
+import { Bot, MessageCircleQuestion, Send, Sparkles, User, X, LogIn } from 'lucide-react';
 import { askAiAction } from '@/app/actions';
 import { Skeleton } from './ui/skeleton';
 import ReactMarkdown from 'react-markdown';
 import { Card, CardContent } from './ui/card';
 import type { AskAiAboutRallyFormValues } from '@/lib/types';
+import Link from 'next/link';
 
 interface AskAiAboutRallyDialogProps {
   rid: string;
@@ -39,6 +40,9 @@ export default function AskAiAboutRallyDialog({ rid, stage_no, rallyName, stageN
   const [isOpen, setIsOpen] = React.useState(false);
   const [messages, setMessages] = React.useState<Message[]>([]);
   const scrollRef = React.useRef<HTMLDivElement>(null);
+  
+  // TODO: Replace with a real authentication check
+  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
 
   React.useEffect(() => {
     if (scrollRef.current) {
@@ -64,7 +68,7 @@ export default function AskAiAboutRallyDialog({ rid, stage_no, rallyName, stageN
     setMessages(prev => [...prev, {role: 'user', content: question}]);
     
     try {
-      const result = await askAiAction({ question }, { rid, stage_no, rallyName, stageName });
+      const result = await askAiAction({ question }, { rid, stage_no, stageName });
       if (result.success && result.answer) {
         setMessages(prev => [...prev, {role: 'assistant', content: result.answer!}]);
         setQuestion('');
@@ -91,6 +95,17 @@ export default function AskAiAboutRallyDialog({ rid, stage_no, rallyName, stageN
 
   const isReady = !!rallyName && !!stageName;
 
+  if (!isLoggedIn) {
+      return (
+          <Button asChild variant="outline" size="sm" className="h-9 px-3">
+            <Link href="/login">
+                <LogIn className="h-4 w-4 md:mr-2" />
+                <span className="hidden md:inline">Login to Ask AI</span>
+            </Link>
+          </Button>
+      )
+  }
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
@@ -108,10 +123,11 @@ export default function AskAiAboutRallyDialog({ rid, stage_no, rallyName, stageN
         </DialogHeader>
         <div className="flex-grow overflow-y-auto p-4 space-y-4" ref={scrollRef}>
             {messages.length === 0 ? (
-                <div className="text-center text-muted-foreground h-full flex flex-col justify-center items-center">
+                <div className="text-center text-muted-foreground h-full flex flex-col justify-center items-center p-4">
                     <Sparkles className="h-10 w-10 mb-4 text-primary"/>
                     <p className="font-semibold">Ask anything about this rally!</p>
                     <p className="text-sm">For example: "Who is leading the rally?" or "Tell me about the top 3 drivers."</p>
+                    <p className="text-xs mt-6 italic">This is an experimental feature, will be much better soon.</p>
                 </div>
             ) : (
                 messages.map((message, index) => (
