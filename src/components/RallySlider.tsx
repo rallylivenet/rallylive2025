@@ -12,7 +12,7 @@ import {
   CarouselPrevious,
 } from '@/components/ui/carousel';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
-import { Clock, Route, Sparkles } from 'lucide-react';
+import { Clock, Route, Sparkles, Share2 } from 'lucide-react';
 import type { Rally, RallyFromApi, LastStageFromApi, StageWinnerInfo, OverallLeaderFromApi, OverallResult } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
@@ -28,7 +28,7 @@ const CheckeredFlagIcon = (props: React.SVGProps<SVGSVGElement>) => (
     </svg>
 );
 
-const SummaryDialog = ({ rally, onGenerate, summary, isSummarizing }: { rally: Rally; onGenerate: (rally: Rally) => void; summary: string; isSummarizing: boolean; }) => {
+const SummaryDialog = ({ rally, onGenerate, onShare, summary, isSummarizing }: { rally: Rally; onGenerate: (rally: Rally) => void; onShare: (rally: Rally, summary: string) => void; summary: string; isSummarizing: boolean; }) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -46,11 +46,17 @@ const SummaryDialog = ({ rally, onGenerate, summary, isSummarizing }: { rally: R
         </Button>
       </DialogTrigger>
       <DialogContent>
-        <DialogHeader>
+        <DialogHeader className="flex-row justify-between items-center">
           <DialogTitle className="flex items-center">
              <Sparkles className="mr-2 h-5 w-5 text-primary" />
             AI Summary: {rally.name}
           </DialogTitle>
+           {!isSummarizing && summary && (
+                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => onShare(rally, summary)}>
+                  <Share2 className="h-4 w-4" />
+                  <span className="sr-only">Share summary</span>
+                </Button>
+           )}
         </DialogHeader>
         {isSummarizing ? (
           <div className="space-y-2">
@@ -73,6 +79,40 @@ export default function RallySlider() {
   const { toast } = useToast();
   const [summaries, setSummaries] = React.useState<{[key: string]: string}>({});
   const [summarizing, setSummarizing] = React.useState<{[key: string]: boolean}>({});
+
+  const handleShareSummary = async (rally: Rally, summary: string) => {
+    if (!summary) return;
+
+    const shareData = {
+      title: `Rally Report: ${rally.name}`,
+      text: summary,
+      url: `${window.location.origin}/rally/${rally.id}/${rally.lastStage.number}`,
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(`${shareData.title}\n\n${shareData.text}\n\n${shareData.url}`);
+        toast({
+          title: "Copied to clipboard!",
+          description: "The summary has been copied to your clipboard.",
+        });
+      }
+    } catch (error) {
+       if (error instanceof DOMException && error.name === 'AbortError') {
+        console.log('Share canceled by user.');
+      } else {
+        console.error("Failed to share:", error);
+        toast({
+          variant: "destructive",
+          title: "Sharing Failed",
+          description: "Could not share the summary.",
+        });
+      }
+    }
+  };
+
 
   const handleGenerateSummary = async (rally: Rally) => {
     if (!rally.id || rally.lastStage.number === '0') {
@@ -326,6 +366,7 @@ export default function RallySlider() {
                                 <SummaryDialog 
                                   rally={rally}
                                   onGenerate={handleGenerateSummary}
+                                  onShare={handleShareSummary}
                                   summary={summaries[rally.id]}
                                   isSummarizing={!!summarizing[rally.id]}
                                 />
