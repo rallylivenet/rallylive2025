@@ -20,6 +20,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const gaMeasurementId = 'G-YOUR_MEASUREMENT_ID';
   return (
     <GoogleOAuthProvider clientId="522089160660-l5o8qgi20v5mnc39le689vgci166ksn3.apps.googleusercontent.com">
       <html lang="en">
@@ -35,6 +36,28 @@ export default function RootLayout({
             crossOrigin="anonymous"
             strategy="lazyOnload"
           />
+          {gaMeasurementId && (
+            <>
+              <Script
+                strategy="afterInteractive"
+                src={`https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}`}
+              />
+              <Script
+                id="google-analytics"
+                strategy="afterInteractive"
+                dangerouslySetInnerHTML={{
+                  __html: `
+                    window.dataLayer = window.dataLayer || [];
+                    function gtag(){dataLayer.push(arguments);}
+                    gtag('js', new Date());
+                    gtag('config', '${gaMeasurementId}', {
+                      page_path: window.location.pathname,
+                    });
+                  `,
+                }}
+              />
+            </>
+          )}
         </head>
         <body className="font-body antialiased" suppressHydrationWarning>
           {children}
