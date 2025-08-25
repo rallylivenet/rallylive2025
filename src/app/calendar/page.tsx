@@ -38,11 +38,8 @@ export default function CalendarPage() {
           throw new Error('Failed to fetch events');
         }
         const data = await response.json();
-        if (Array.isArray(data)) {
-          setEvents(data);
-        } else {
-          setEvents([]); // Ensure events is always an array
-        }
+        // Ensure data is always an array before setting state
+        setEvents(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error('Failed to fetch events:', error);
         setEvents([]); // Reset to empty array on error
