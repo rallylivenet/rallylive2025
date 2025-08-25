@@ -27,7 +27,7 @@ const EventItem = ({ event }: { event: RallyEvent }) => {
     );
 
     if (event.id) {
-        const link = event.sonEtap && event.sonEtap !== '0' ? `/rally/${event.id}/${event.sonEtap}` : `/rally/${event.id}`;
+        const link = event.sonEtap && event.sonEtap !== '0' ? `/rally/${event.id}/${event.sonEtap}` : `/rally/${event.id}/1`;
         return <Link href={link}>{content}</Link>;
     }
     
