@@ -26,9 +26,15 @@ const EventItem = ({ event }: { event: RallyEvent }) => {
         </div>
     );
 
-    if (event.id && event.Link) {
-        return <Link href={`/rally/${event.id}`}>{content}</Link>;
+    if (event.id) {
+        const link = event.sonEtap && event.sonEtap !== '0' ? `/rally/${event.id}/${event.sonEtap}` : `/rally/${event.id}`;
+        return <Link href={link}>{content}</Link>;
     }
+    
+    if (event.Link) {
+        return <Link href={event.Link}>{content}</Link>;
+    }
+
     return <div className="cursor-default">{content}</div>;
 };
 
@@ -53,7 +59,10 @@ export default function CalendarPage() {
           throw new Error('Failed to fetch events');
         }
         const data = await response.json();
-        setEvents(data.events && Array.isArray(data.events) ? data.events : []);
+        const filteredEvents = data.events && Array.isArray(data.events) 
+          ? data.events.filter((event: RallyEvent) => event.leftStage !== null) 
+          : [];
+        setEvents(filteredEvents);
       } catch (error) {
         console.error('Failed to fetch events:', error);
         setEvents([]); 
