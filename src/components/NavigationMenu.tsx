@@ -124,6 +124,12 @@ export default function NavigationMenu() {
             <span>Privacy Policy</span>
           </DropdownMenuItem>
         </Link>
+        <Link href="/terms" passHref>
+          <DropdownMenuItem>
+            <FileText className="mr-2 h-4 w-4" />
+            <span>Terms of Service</span>
+          </DropdownMenuItem>
+        </Link>
         <Link href="/impressum" passHref>
           <DropdownMenuItem>
             <FileText className="mr-2 h-4 w-4" />
