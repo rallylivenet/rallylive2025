@@ -6,6 +6,7 @@
 
 
 
+
 export interface Rally {
   id: string;
   name: string;
@@ -146,4 +147,10 @@ export interface RallyEvent {
   ridFlag?: string | null;
   sonEtap?: string | null;
   leftStage?: number | null;
+}
+
+export interface LiveRallyMenuItem {
+    id: string;
+    name: string;
+    link: string;
 }
