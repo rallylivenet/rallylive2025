@@ -11,13 +11,16 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/components/ui/carousel';
-import { Card, CardContent } from '@/components/ui/card';
-import { Clock, Route } from 'lucide-react';
-import type { Rally, RallyFromApi, LastStageFromApi, StageWinnerInfo, OverallLeaderFromApi } from '@/lib/types';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { Clock, Route, Sparkles } from 'lucide-react';
+import type { Rally, RallyFromApi, LastStageFromApi, StageWinnerInfo, OverallLeaderFromApi, OverallResult } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from './ui/skeleton';
 import Countdown from './Countdown';
+import { Button } from './ui/button';
+import { summarizeRally } from '@/ai/flows/summarize-rally';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
 
 const CheckeredFlagIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
@@ -25,11 +28,95 @@ const CheckeredFlagIcon = (props: React.SVGProps<SVGSVGElement>) => (
     </svg>
 );
 
+const SummaryDialog = ({ rally, onGenerate, summary, isSummarizing }: { rally: Rally; onGenerate: (rally: Rally) => void; summary: string; isSummarizing: boolean; }) => {
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button 
+          variant="secondary"
+          onClick={() => {
+            if (!summary && !isSummarizing) {
+              onGenerate(rally);
+            }
+          }}
+          disabled={isSummarizing}
+        >
+          <Sparkles className="mr-2 h-4 w-4" />
+          {isSummarizing ? 'Generating...' : (summary ? 'View Summary' : 'Generate AI Summary')}
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle className="flex items-center">
+             <Sparkles className="mr-2 h-5 w-5 text-primary" />
+            AI Summary: {rally.name}
+          </DialogTitle>
+        </DialogHeader>
+        {isSummarizing ? (
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-3/4" />
+          </div>
+        ) : (
+          <p className="text-secondary-foreground">{summary || 'Click "Generate AI Summary" to start.'}</p>
+        )}
+      </DialogContent>
+    </Dialog>
+  );
+};
+
 
 export default function RallySlider() {
   const [rallies, setRallies] = React.useState<Rally[]>([]);
   const [loading, setLoading] = React.useState(true);
   const { toast } = useToast();
+  const [summaries, setSummaries] = React.useState<{[key: string]: string}>({});
+  const [summarizing, setSummarizing] = React.useState<{[key: string]: boolean}>({});
+
+  const handleGenerateSummary = async (rally: Rally) => {
+    if (!rally.id || rally.lastStage.number === '0') {
+        toast({
+            variant: "destructive",
+            title: "Cannot generate summary",
+            description: "Summary can only be generated for active or finished rallies.",
+        });
+        return;
+    }
+    
+    setSummarizing(prev => ({...prev, [rally.id]: true}));
+    
+    try {
+        const overallResultsResponse = await fetch(`https://www.rallylive.net/mobileapp/v1/json-overall.php?rid=${rally.id}&stage_no=${rally.lastStage.number}`);
+        if (!overallResultsResponse.ok) throw new Error('Failed to fetch overall results');
+        const overallResultsData: OverallResult[] = await overallResultsResponse.json();
+
+        const resultsString = overallResultsData.slice(0, 10).map(r => 
+            `${r.rank}. ${r.driver_surname} (${r.car_brand}) - Total Time: ${r.total_time}, Diff: ${r.diff_to_leader}`
+        ).join('\n');
+        
+        const response = await summarizeRally({
+            rallyName: rally.name,
+            overallResults: resultsString,
+        });
+
+        if (response.summary) {
+            setSummaries(prev => ({...prev, [rally.id]: response.summary}));
+        } else {
+            throw new Error("Failed to generate summary.");
+        }
+    } catch (error) {
+        console.error("Failed to generate summary:", error);
+        toast({
+            variant: "destructive",
+            title: "AI Summary Error",
+            description: "Could not generate the rally summary. Please try again.",
+        });
+    } finally {
+        setSummarizing(prev => ({...prev, [rally.id]: false}));
+    }
+  };
+
 
   React.useEffect(() => {
     async function fetchRallies() {
@@ -183,7 +270,7 @@ export default function RallySlider() {
           return (
             <CarouselItem key={rally.id}>
               <div className="p-1">
-                <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 border-2">
+                <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 border-2 flex flex-col h-full">
                   <div className="relative aspect-[720/380]">
                     <Link href={resultsLink} aria-label={`View details for ${rally.name}`}>
                       <Image
@@ -204,7 +291,7 @@ export default function RallySlider() {
                       <Badge variant="destructive" className="absolute top-4 right-4 text-base shadow-lg">LIVE</Badge>
                     )}
                   </div>
-                  <CardContent className="p-6">
+                  <CardContent className="p-6 flex-grow">
                     {isUpcoming ? (
                         <div className="text-center">
                             <h4 className="font-bold font-headline text-xl mb-4">Rally starts in:</h4>
@@ -230,6 +317,21 @@ export default function RallySlider() {
                     </div>
                     )}
                   </CardContent>
+                   <CardFooter className="p-6 pt-0 border-t mt-auto">
+                        <div className="flex justify-between items-center w-full">
+                           <Button asChild>
+                               <Link href={resultsLink}>View Results</Link>
+                           </Button>
+                           {!isUpcoming && (
+                                <SummaryDialog 
+                                  rally={rally}
+                                  onGenerate={handleGenerateSummary}
+                                  summary={summaries[rally.id]}
+                                  isSummarizing={!!summarizing[rally.id]}
+                                />
+                           )}
+                        </div>
+                    </CardFooter>
                 </Card>
               </div>
             </CarouselItem>
