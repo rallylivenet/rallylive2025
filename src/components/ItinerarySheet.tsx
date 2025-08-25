@@ -38,7 +38,8 @@ export default function ItinerarySheet() {
           throw new Error('Failed to fetch itinerary');
         }
         const data: ItineraryItem[] = await response.json();
-        setItinerary(data.filter((item) => item.icon !== 'road'));
+        // Filter for actual stages with a positive number
+        setItinerary(data.filter((item) => item.icon !== 'road' && parseInt(item.no, 10) > 0));
       } catch (error) {
         console.error('Failed to fetch itinerary:', error);
         toast({
@@ -80,43 +81,56 @@ export default function ItinerarySheet() {
             </div>
           ) : (
             <ul className="space-y-3">
-              {itinerary.map((item) => (
-                <li key={item.no}>
-                  <Button
-                    asChild
-                    variant={item.no === currentStageNo ? 'default' : 'secondary'}
-                    className="w-full h-auto justify-start"
-                  >
-                    <Link
-                      href={`/rally/${rid}/${item.no}`}
-                      className="flex flex-col items-start p-3"
+              {itinerary.map((item) => {
+                const isLink = parseInt(item.no, 10) > 0;
+                
+                return (
+                  <li key={item.no}>
+                    <Button
+                      asChild={isLink}
+                      variant={item.no === currentStageNo ? 'default' : 'secondary'}
+                      className="w-full h-auto justify-start"
+                      disabled={!isLink}
                     >
-                      <h4 className="font-semibold">
-                        {item.name.startsWith('SS')
-                          ? item.name
-                          : `SS${item.no} ${item.name}`}
-                      </h4>
-                      <div className="text-xs text-muted-foreground mt-1 flex flex-wrap gap-x-3 gap-y-1">
-                        <span className="flex items-center">
-                          <Calendar className="mr-1.5 h-3 w-3" />
-                          {new Date(item.date).toLocaleDateString('en-US', {
-                            month: 'short',
-                            day: 'numeric',
-                          })}
-                        </span>
-                        <span className="flex items-center">
-                          <Clock className="mr-1.5 h-3 w-3" />
-                          {item.time}
-                        </span>
-                        <span className="flex items-center">
-                          <Route className="mr-1.5 h-3 w-3" />
-                          {item.km} km
-                        </span>
-                      </div>
-                    </Link>
-                  </Button>
-                </li>
-              ))}
+                      {isLink ? (
+                        <Link
+                          href={`/rally/${rid}/${item.no}`}
+                          className="flex flex-col items-start p-3"
+                        >
+                          <h4 className="font-semibold">
+                            {item.name.startsWith('SS')
+                              ? item.name
+                              : `SS${item.no} ${item.name}`}
+                          </h4>
+                          <div className="text-xs text-muted-foreground mt-1 flex flex-wrap gap-x-3 gap-y-1">
+                            <span className="flex items-center">
+                              <Calendar className="mr-1.5 h-3 w-3" />
+                              {new Date(item.date).toLocaleDateString('en-US', {
+                                month: 'short',
+                                day: 'numeric',
+                              })}
+                            </span>
+                            <span className="flex items-center">
+                              <Clock className="mr-1.5 h-3 w-3" />
+                              {item.time}
+                            </span>
+                            <span className="flex items-center">
+                              <Route className="mr-1.5 h-3 w-3" />
+                              {item.km} km
+                            </span>
+                          </div>
+                        </Link>
+                      ) : (
+                         <div className="flex flex-col items-start p-3 text-left">
+                            <h4 className="font-semibold">
+                                {item.name}
+                            </h4>
+                         </div>
+                      )}
+                    </Button>
+                  </li>
+                )
+              })}
             </ul>
           )}
         </div>
