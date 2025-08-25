@@ -255,8 +255,6 @@ const ResultsTable = ({ data, type }: { data: (StageResult[] | OverallResult[]),
               <TableHead className="w-[50px] p-2">Pos</TableHead>
               <TableHead className="p-2">Driver</TableHead>
               <TableHead className="text-right p-2">Time</TableHead>
-              <TableHead className="text-right p-2 hidden md:table-cell">Leader</TableHead>
-              <TableHead className="text-right p-2 hidden sm:table-cell">Prev.</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -271,9 +269,13 @@ const ResultsTable = ({ data, type }: { data: (StageResult[] | OverallResult[]),
                   <div className="text-sm text-muted-foreground">{`${item.codriver_name.charAt(0)}. ${item.codriver_surname}`}</div>
                   <div className="text-xs text-muted-foreground/80">{item.car_brand}</div>
                 </TableCell>
-                <TableCell className="p-2 text-right font-mono text-xs sm:text-sm">{type === 'stage' ? (item as StageResult).stage_time : (item as OverallResult).total_time}</TableCell>
-                <TableCell className="p-2 text-right font-mono text-xs hidden md:table-cell">{item.diff_to_leader}</TableCell>
-                <TableCell className="p-2 text-right font-mono text-xs hidden sm:table-cell">{item.diff_to_previous}</TableCell>
+                <TableCell className="p-2 text-right font-mono text-xs sm:text-sm">
+                    <div>{type === 'stage' ? (item as StageResult).stage_time : (item as OverallResult).total_time}</div>
+                    <div className="text-xs text-muted-foreground">
+                        <div>{item.diff_to_leader}</div>
+                        <div>{item.diff_to_previous}</div>
+                    </div>
+                </TableCell>
             </TableRow>
             ))}
         </TableBody>
@@ -297,5 +299,7 @@ const ResultsTableSkeleton = () => {
         </div>
     )
 }
+
+    
 
     
