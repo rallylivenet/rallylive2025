@@ -20,7 +20,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const gaMeasurementId = 'G-YOUR_MEASUREMENT_ID';
+  const gaMeasurementId = 'G-297JC2LEK9';
   return (
     <GoogleOAuthProvider clientId="522089160660-l5o8qgi20v5mnc39le689vgci166ksn3.apps.googleusercontent.com">
       <html lang="en">
