@@ -17,7 +17,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import type { StageResult, OverallResult, RallyCategory, ItineraryItem } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
-import { ArrowLeft, Sparkles, Filter, Users, Flag, Share2, X, MessageCircleQuestion } from 'lucide-react';
+import { ArrowLeft, Sparkles, Filter, Users, Flag, Share2, X, MessageCircleQuestion, LogIn } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { summarizeStageResults } from '@/ai/flows/summarize-stage-results';
 import {
@@ -46,6 +46,7 @@ export default function RallyStagePage() {
   const [isSummarizing, setIsSummarizing] = React.useState(false);
   const [categories, setCategories] = React.useState<RallyCategory[]>([]);
   const [selectedClass, setSelectedClass] = React.useState<string>('All');
+  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
 
 
   React.useEffect(() => {
@@ -261,10 +262,19 @@ export default function RallyStagePage() {
                   rallyName={rallyName}
                   stageName={stageName}
                 />
-                <Button onClick={handleGenerateSummary} disabled={isSummarizing || loading} size="sm" className="h-9 px-3">
-                    <Sparkles className="h-4 w-4 md:mr-2" />
-                    <span className="hidden md:inline">{isSummarizing ? 'Generating...' : 'AI Summary'}</span>
-                </Button>
+                {isLoggedIn ? (
+                  <Button onClick={handleGenerateSummary} disabled={isSummarizing || loading} size="sm" className="h-9 px-3">
+                      <Sparkles className="h-4 w-4 md:mr-2" />
+                      <span className="hidden md:inline">{isSummarizing ? 'Generating...' : 'AI Summary'}</span>
+                  </Button>
+                ) : (
+                  <Button asChild size="sm" className="h-9 px-3">
+                    <Link href="/login">
+                        <LogIn className="h-4 w-4 md:mr-2" />
+                        <span className="hidden md:inline">Login for AI Summary</span>
+                    </Link>
+                  </Button>
+                )}
               </div>
         </div>
 
