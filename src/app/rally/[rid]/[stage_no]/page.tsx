@@ -366,7 +366,7 @@ const ResultsTable = ({ data, type }: { data: (StageResult[] | OverallResult[]),
                       {/* Compact view for mobile */}
                       <div className="flex items-start gap-1.5 md:hidden">
                         <div className="w-4 flex-shrink-0 text-center">
-                          {flagUrl && <Image src={flagUrl} alt={item.driver_flag} width={16} height={11} unoptimized />}
+                          {flagUrl && <Image src={flagUrl} alt={item.driver_flag} width={16} height={11} />}
                           <div className="text-[10px] font-bold text-muted-foreground">{item.door_no}</div>
                         </div>
                         <div className="flex-1">
@@ -382,7 +382,7 @@ const ResultsTable = ({ data, type }: { data: (StageResult[] | OverallResult[]),
                       {/* Detailed view for wider screens */}
                       <div className="hidden md:block">
                         <div className="font-bold whitespace-nowrap flex items-center">
-                          {flagUrl && <Image src={flagUrl} alt={item.driver_flag} width={16} height={11} className="mr-1.5" unoptimized />}
+                          {flagUrl && <Image src={flagUrl} alt={item.driver_flag} width={16} height={11} className="mr-1.5" />}
                           {`${item.driver_name.toUpperCase()} ${item.driver_surname.toUpperCase()}`}
                         </div>
                         <div className="text-muted-foreground/90 text-[11px] whitespace-nowrap pl-[22px]">{`${item.codriver_name} ${item.codriver_surname}`}</div>
