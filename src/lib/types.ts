@@ -1,11 +1,6 @@
 
 
-
-
-
-
-
-
+import {z} from 'zod';
 
 export interface Rally {
   id: string;
@@ -154,3 +149,24 @@ export interface LiveRallyMenuItem {
     name: string;
     link: string;
 }
+
+export const RallyUpdateInputSchema = z.object({
+  rallyName: z.string().describe('The name of the rally.'),
+  stageName: z.string().optional().describe('The name of the stage, if applicable.'),
+  updateType: z.enum(['stage_winner', 'overall_leader_change', 'breaking_news', 'rally_start', 'rally_finish']),
+  stageWinner: z.object({
+    driverName: z.string(),
+    time: z.string(),
+  }).optional().describe('Details about the stage winner.'),
+  overallLeader: z.object({
+    driverName: z.string(),
+    leadBy: z.string(),
+  }).optional().describe('Details about the new overall leader.'),
+  breakingNews: z.string().optional().describe('A breaking news message.'),
+});
+export type RallyUpdateInput = z.infer<typeof RallyUpdateInputSchema>;
+
+export const RallyUpdateOutputSchema = z.object({
+    notification: z.string().describe('The generated push notification message (max 150 characters).'),
+});
+export type RallyUpdateOutput = z.infer<typeof RallyUpdateOutputSchema>;
