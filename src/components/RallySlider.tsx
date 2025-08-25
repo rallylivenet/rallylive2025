@@ -12,7 +12,7 @@ import {
   CarouselPrevious,
 } from '@/components/ui/carousel';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
-import { Clock, Route, Sparkles, Share2 } from 'lucide-react';
+import { Clock, Route, Sparkles, Share2, LogIn } from 'lucide-react';
 import type { Rally, RallyFromApi, LastStageFromApi, StageWinnerInfo, OverallLeaderFromApi, OverallResult } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
@@ -78,7 +78,11 @@ export default function RallySlider() {
   const [loading, setLoading] = React.useState(true);
   const { toast } = useToast();
   const [summaries, setSummaries] = React.useState<{[key: string]: string}>({});
-  const [summarizing, setSummarizing] = React.useState<{[key: string]: boolean}>({});
+    const [summarizing, setSummarizing] = React.useState<{[key: string]: boolean}>({});
+  
+  // TODO: Replace with a real authentication check
+  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+
 
   const handleShareSummary = async (rally: Rally, summary: string) => {
     if (!summary) return;
@@ -362,13 +366,22 @@ export default function RallySlider() {
                                <Link href={resultsLink}>View Results</Link>
                            </Button>
                            {!isUpcoming && (
-                                <SummaryDialog 
-                                  rally={rally}
-                                  onGenerate={handleGenerateSummary}
-                                  onShare={handleShareSummary}
-                                  summary={summaries[rally.id]}
-                                  isSummarizing={!!summarizing[rally.id]}
-                                />
+                                isLoggedIn ? (
+                                    <SummaryDialog 
+                                      rally={rally}
+                                      onGenerate={handleGenerateSummary}
+                                      onShare={handleShareSummary}
+                                      summary={summaries[rally.id]}
+                                      isSummarizing={!!summarizing[rally.id]}
+                                    />
+                                ) : (
+                                    <Button asChild variant="secondary">
+                                       <Link href="/login">
+                                           <LogIn className="mr-2 h-4 w-4" /> 
+                                           Login for AI Summary
+                                       </Link>
+                                    </Button>
+                                )
                            )}
                         </div>
                     </CardFooter>
