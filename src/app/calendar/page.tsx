@@ -31,7 +31,7 @@ const EventItem = ({ event }: { event: RallyEvent }) => {
         return <Link href={link}>{content}</Link>;
     }
     
-    if (event.Link) {
+    if (event.Link && !event.Link.includes('|')) {
         return <Link href={event.Link}>{content}</Link>;
     }
 
@@ -54,6 +54,7 @@ export default function CalendarPage() {
       const month = selectedDate.getMonth() + 1;
       try {
         const url = `https://www.rallylive.net/mobileapp/v1/get-events.php?year=${year}&month=${String(month).padStart(2, '0')}`;
+        console.log("Fetching events from:", url);
         const response = await fetch(url);
         if (!response.ok) {
           throw new Error('Failed to fetch events');
