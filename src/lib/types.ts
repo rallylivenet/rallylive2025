@@ -2,6 +2,7 @@
 
 
 
+
 export interface Rally {
   id: string;
   name: string;
@@ -126,5 +127,10 @@ export interface Post {
         name: string;
     }[];
   }
+}
+
+export interface RallyCategory {
+  category: string;
+  occurrence: number;
 }
     

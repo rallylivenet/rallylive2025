@@ -13,12 +13,20 @@ import {
 } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import type { StageResult, OverallResult } from '@/lib/types';
+import type { StageResult, OverallResult, RallyCategory } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
-import { ArrowLeft, Sparkles } from 'lucide-react';
+import { ArrowLeft, Sparkles, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { summarizeStageResults } from '@/ai/flows/summarize-stage-results';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 
 export default function RallyStagePage() {
   const params = useParams();
@@ -32,6 +40,28 @@ export default function RallyStagePage() {
   const [stageName, setStageName] = React.useState('');
   const [summary, setSummary] = React.useState('');
   const [isSummarizing, setIsSummarizing] = React.useState(false);
+  const [categories, setCategories] = React.useState<RallyCategory[]>([]);
+  const [selectedClass, setSelectedClass] = React.useState<string>('All');
+
+
+  React.useEffect(() => {
+    if (!rid) return;
+
+    async function fetchCategories() {
+        try {
+            const response = await fetch(`https://www.rallylive.net/mobileapp/v1/json-categories.php?rid=${rid}`);
+            if(response.ok) {
+                const data: RallyCategory[] = await response.json();
+                setCategories(data);
+            }
+        } catch (error) {
+            console.error("Failed to fetch categories:", error);
+            // Non-critical, so we don't show a toast
+        }
+    }
+    fetchCategories();
+
+  }, [rid]);
 
   React.useEffect(() => {
     if (!rid || !stage_no) return;
@@ -39,9 +69,11 @@ export default function RallyStagePage() {
     async function fetchData() {
       setLoading(true);
       try {
+        const classParam = selectedClass === 'All' ? '' : `&cls=${selectedClass}`;
+
         const [stageResultsResponse, overallResultsResponse, stageNameResponse] = await Promise.all([
-          fetch(`https://www.rallylive.net/mobileapp/v1/json-stagetimes.php?rid=${rid}&stage_no=${stage_no}`),
-          fetch(`https://www.rallylive.net/mobileapp/v1/json-overall.php?rid=${rid}&stage_no=${stage_no}`),
+          fetch(`https://www.rallylive.net/mobileapp/v1/json-stagetimes.php?rid=${rid}&stage_no=${stage_no}${classParam}`),
+          fetch(`https://www.rallylive.net/mobileapp/v1/json-overall.php?rid=${rid}&stage_no=${stage_no}${classParam}`),
           fetch(`https://www.rallylive.net/mobileapp/v1/json-sonetap.php?rid=${rid}`)
         ]);
 
@@ -72,13 +104,12 @@ export default function RallyStagePage() {
     }
 
     fetchData();
-  }, [rid, stage_no, toast]);
+  }, [rid, stage_no, toast, selectedClass]);
 
   const handleGenerateSummary = async () => {
     setIsSummarizing(true);
     setSummary('');
     try {
-        // Format the results data into a readable string for the AI
         const resultsString = stageResults.map(r => 
             `${r.rank}. ${r.driver_surname} (${r.car_brand}) - Time: ${r.stage_time}, Diff: ${r.diff_to_leader}`
         ).join('\n');
@@ -108,7 +139,7 @@ export default function RallyStagePage() {
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
-      <div className="mb-4 flex justify-between items-center">
+      <div className="mb-4 flex flex-wrap gap-4 justify-between items-center">
         <Link href="/">
           <Button variant="outline">
             <ArrowLeft className="mr-2 h-4 w-4" />
@@ -118,11 +149,29 @@ export default function RallyStagePage() {
         <h2 className="text-xl font-bold text-right">{loading ? <Skeleton className="h-7 w-48" /> : stageName}</h2>
       </div>
 
-       <div className="mb-6">
+       <div className="mb-6 flex flex-wrap gap-4 items-center">
         <Button onClick={handleGenerateSummary} disabled={isSummarizing || loading}>
           <Sparkles className="mr-2 h-4 w-4" />
           {isSummarizing ? 'Generating...' : 'Generate AI Summary'}
         </Button>
+        {categories.length > 0 && (
+            <div className="flex items-center gap-2">
+                <Filter className="h-5 w-5 text-muted-foreground" />
+                <Select value={selectedClass} onValueChange={setSelectedClass}>
+                    <SelectTrigger className="w-[180px]">
+                        <SelectValue placeholder="Filter by class" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="All">All Classes</SelectItem>
+                        {categories.map((cat) => (
+                            <SelectItem key={cat.category} value={cat.category}>
+                                {cat.category} ({cat.occurrence})
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+            </div>
+        )}
       </div>
 
       {(isSummarizing || summary) && (
@@ -151,7 +200,7 @@ export default function RallyStagePage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Stage Results</CardTitle>
+            <CardTitle>Stage Results {selectedClass !== 'All' && `(${selectedClass})`}</CardTitle>
           </CardHeader>
           <CardContent>
             {loading ? (
@@ -163,7 +212,7 @@ export default function RallyStagePage() {
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle>Overall Standings</CardTitle>
+            <CardTitle>Overall Standings {selectedClass !== 'All' && `(${selectedClass})`}</CardTitle>
           </CardHeader>
           <CardContent>
             {loading ? (
@@ -180,7 +229,7 @@ export default function RallyStagePage() {
 
 const ResultsTable = ({ data, type }: { data: (StageResult[] | OverallResult[]), type: 'stage' | 'overall' }) => {
     if (!data || data.length === 0) {
-        return <p className="p-4 text-muted-foreground">No results available.</p>;
+        return <p className="p-4 text-center text-muted-foreground">No results available for this class.</p>;
     }
 
   return (
