@@ -7,7 +7,6 @@ import { AskAiAboutRallyFormSchema, type AskAiAboutRallyFormValues } from '@/lib
 interface RallyContext {
   rid: string;
   stage_no: string;
-  rallyName: string;
   stageName: string;
 }
 
@@ -23,10 +22,10 @@ export async function askAiAction(
   }
 
   const { question } = validation.data;
-  const { rid, stage_no, rallyName, stageName } = context;
+  const { rid, stage_no, stageName } = context;
   
   try {
-    const result = await answerRallyQuestion({ rid, stage_no, question, rallyName, stageName });
+    const result = await answerRallyQuestion({ rid, stage_no, question, stageName });
     if (result.answer) {
       return { success: true, answer: result.answer };
     }

@@ -184,7 +184,6 @@ export const AnswerRallyQuestionInputSchema = z.object({
     rid: z.string(),
     stage_no: z.string(),
     question: z.string(),
-    rallyName: z.string(),
     stageName: z.string(),
 });
 export type AnswerRallyQuestionInput = z.infer<typeof AnswerRallyQuestionInputSchema>;

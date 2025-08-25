@@ -13,12 +13,14 @@ import {ai} from '@/ai/genkit';
 import { AnswerRallyQuestionInputSchema, AnswerRallyQuestionOutputSchema } from '@/lib/types';
 import type { AnswerRallyQuestionInput, AnswerRallyQuestionOutput, StageResult, OverallResult, ItineraryItem } from '@/lib/types';
 
-async function getRallyData(rid: string, current_stage_no: string): Promise<{ allStageResults: Record<string, StageResult[]>, overallResults: OverallResult[], itinerary: ItineraryItem[] }> {
+async function getRallyData(rid: string, current_stage_no: string): Promise<{ allStageResults: Record<string, StageResult[]>, overallResults: OverallResult[], itinerary: ItineraryItem[], rallyName: string }> {
     const itineraryResponse = await fetch(`https://www.rallylive.net/mobileapp/v1/rally-itinerary.php?rid=${rid}`);
     if (!itineraryResponse.ok) {
         throw new Error('Failed to fetch rally itinerary');
     }
     const itinerary: ItineraryItem[] = await itineraryResponse.json();
+    const rallyHeader = itinerary.find(item => item.dbcode && item.dbcode.startsWith("h"));
+    const rallyName = rallyHeader ? rallyHeader.name : "Rally";
     
     const overallResultsResponse = await fetch(`https://www.rallylive.net/mobileapp/v1/json-overall.php?rid=${rid}&stage_no=${current_stage_no}`);
      if (!overallResultsResponse.ok) {
@@ -46,7 +48,7 @@ async function getRallyData(rid: string, current_stage_no: string): Promise<{ al
 
     await Promise.all(stageResultPromises);
     
-    return { allStageResults, overallResults, itinerary };
+    return { allStageResults, overallResults, itinerary, rallyName };
 }
 
 
@@ -57,6 +59,7 @@ export async function answerRallyQuestion(input: AnswerRallyQuestionInput): Prom
 const answerRallyQuestionPrompt = ai.definePrompt({
   name: 'answerRallyQuestionPrompt',
   input: {schema: AnswerRallyQuestionInputSchema.extend({
+      rallyName: z.string(),
       allStageResults: ai.defineSchema('allStageResults', {}),
       overallResults: ai.defineSchema('overallResults', []),
       itinerary: ai.defineSchema('itinerary', []),
@@ -78,7 +81,7 @@ const answerRallyQuestionPrompt = ai.definePrompt({
 
   Here are the results for each stage (top 5 for brevity):
   {{#each allStageResults}}
-  Stage {{this.[0].no}}: {{this.[0].name}}
+  Stage {{#if this.[0].no}}{{this.[0].no}}: {{/if}}{{#if this.[0].name}}{{this.[0].name}}{{/if}}
     {{#each this}}
     - Rank {{rank}}: {{driver_surname}}, Time: {{stage_time}}, Diff: {{diff_to_leader}}
     {{/each}}
@@ -100,12 +103,13 @@ const answerRallyQuestionFlow = ai.defineFlow(
     outputSchema: AnswerRallyQuestionOutputSchema,
   },
   async (input) => {
-    const { rid, stage_no, question, rallyName, stageName } = input;
+    const { rid, stage_no, question, stageName } = input;
 
-    const { allStageResults, overallResults, itinerary } = await getRallyData(rid, stage_no);
+    const { allStageResults, overallResults, itinerary, rallyName } = await getRallyData(rid, stage_no);
 
     const promptInput = {
         ...input,
+        rallyName,
         allStageResults: allStageResults,
         overallResults: overallResults.slice(0, 10),
         itinerary: itinerary
