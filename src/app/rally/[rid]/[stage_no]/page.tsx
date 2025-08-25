@@ -181,7 +181,7 @@ export default function RallyStagePage() {
                     </div>
                 )}
             </div>
-             <Button onClick={handleGenerateSummary} disabled={isSummarizing || loading} size="sm" className="md:w-auto w-10 h-9 p-0 md:px-3 md:w-auto">
+             <Button onClick={handleGenerateSummary} disabled={isSummarizing || loading} size="sm" className="md:w-auto w-10 h-9 p-0 md:px-3">
                 <Sparkles className="h-4 w-4 md:mr-2" />
                 <span className="hidden md:inline">{isSummarizing ? 'Generating...' : 'AI Summary'}</span>
                  <span className="sr-only">AI Summary</span>
@@ -256,6 +256,8 @@ const ResultsTable = ({ data, type }: { data: (StageResult[] | OverallResult[]),
         if (!penalty || penalty === '00:00.0' || penalty === '0' || penalty === '') return '';
         
         const parts = penalty.split(':');
+        if (parts.length < 2) return '';
+
         const minutes = parseInt(parts[0], 10);
         const seconds = parseFloat(parts[1]);
         const totalSeconds = minutes * 60 + seconds;
@@ -297,8 +299,10 @@ const ResultsTable = ({ data, type }: { data: (StageResult[] | OverallResult[]),
                         <div className="font-bold whitespace-nowrap">{`${item.driver_name.toUpperCase()} ${item.driver_surname.toUpperCase()}`}</div>
                         <div className="text-muted-foreground/90 text-[11px] whitespace-nowrap">{`${item.codriver_name} ${item.codriver_surname}`}</div>
                         <div className="text-muted-foreground/80 text-[11px] flex flex-col">
-                          <span>#{item.door_no} {item.car_brand} {item.car_version}</span>
-                          {penaltyStr && <div className="text-destructive font-bold">{penaltyStr}</div>}
+                          <span>
+                            #{item.door_no} {item.car_brand} {item.car_version}
+                            {penaltyStr && <span className="text-destructive font-bold ml-2">{penaltyStr}</span>}
+                          </span>
                         </div>
                       </div>
                     </TableCell>
