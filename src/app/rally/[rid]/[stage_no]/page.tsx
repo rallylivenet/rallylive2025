@@ -267,21 +267,26 @@ const ResultsTable = ({ data, type }: { data: (StageResult[] | OverallResult[]),
                   {/* Compact view for mobile */}
                   <div className="md:hidden">
                     <div className="font-bold whitespace-nowrap">{`${item.driver_surname.toUpperCase()}`}</div>
-                    <div className="text-muted-foreground/80">#{item.door_no} {item.car_brand}</div>
+                    <div className="text-muted-foreground/80">#{item.door_no} {item.car_version}</div>
                   </div>
                   {/* Detailed view for wider screens */}
                   <div className="hidden md:block">
-                    <div className="font-bold whitespace-nowrap">{`${item.driver_name} ${item.driver_surname}`}</div>
+                    <div className="font-bold whitespace-nowrap">{`${item.driver_surname.toUpperCase()}`}</div>
                     <div className="text-muted-foreground/90 text-[11px] whitespace-nowrap">{`${item.codriver_name} ${item.codriver_surname}`}</div>
                     <div className="text-muted-foreground/80 text-[11px]">#{item.door_no} {item.car_brand} {item.car_version}</div>
                   </div>
                 </TableCell>
                 <TableCell className="p-1 text-right align-top">
-                    <div>{type === 'stage' ? (item as StageResult).stage_time : (item as OverallResult).total_time}</div>
+                    <div>
+                        {type === 'stage' ? (item as StageResult).stage_time : (item as OverallResult).total_time}
+                        {type === 'overall' && (item as OverallResult).penalty_time && (item as OverallResult).penalty_time !== '00:00.0' && <span className="text-destructive ml-1">+{(item as OverallResult).penalty_time.replace(/00:|0/g, '')}</span>}
+                    </div>
+                    <div className="text-muted-foreground">
+                       {item.diff_to_previous}
+                    </div>
                     <div className="text-muted-foreground">
                        {item.diff_to_leader}
                     </div>
-                     {type === 'overall' && (item as OverallResult).penalty_time && (item as OverallResult).penalty_time !== '00:00.0' && <div className="text-destructive">P: {(item as OverallResult).penalty_time}</div>}
                 </TableCell>
             </TableRow>
             ))}
@@ -310,3 +315,5 @@ const ResultsTableSkeleton = () => {
         </div>
     )
 }
+
+    
