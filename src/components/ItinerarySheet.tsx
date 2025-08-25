@@ -11,11 +11,34 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { List, Calendar, Clock, Route } from 'lucide-react';
+import { List, Calendar, Clock, Route, Flag, Users, Wrench, FlagCheckered } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import type { ItineraryItem } from '@/lib/types';
 import { Skeleton } from './ui/skeleton';
 import { useParams } from 'next/navigation';
+import { cn } from '@/lib/utils';
+
+const iconMap: { [key: string]: React.ElementType } = {
+    'fa-solid fa-flag': Flag,
+    'fa-solid fa-users': Users,
+    'fa-solid fa-wrench': Wrench,
+    'fa-solid fa-flag-checkered': FlagCheckered,
+};
+
+const ItineraryRowIcon = ({ icon, stageNo }: { icon: string; stageNo: string }) => {
+    const IconComponent = iconMap[icon];
+    
+    if (IconComponent) {
+        return <IconComponent className="h-5 w-5 text-muted-foreground" />;
+    }
+
+    if (parseInt(stageNo, 10) > 0) {
+        return <span className="font-bold w-5 text-center">{stageNo}</span>;
+    }
+
+    return <div className="w-5 h-5" />; // Placeholder for spacing
+};
+
 
 export default function ItinerarySheet() {
   const params = useParams();
@@ -79,58 +102,36 @@ export default function ItinerarySheet() {
               ))}
             </div>
           ) : (
-            <ul className="space-y-3">
-              {itinerary.map((item) => {
+            <div className="space-y-1">
+              {itinerary.map((item, index) => {
                 const isLink = parseInt(item.no, 10) > 0;
-                
+                const Wrapper = isLink ? Link : 'div';
+                const wrapperProps = isLink ? { href: `/rally/${rid}/${item.no}` } : {};
+
                 return (
-                  <li key={`${item.day}-${item.no}-${item.name}`}>
-                    <Button
-                      asChild={isLink}
-                      variant={item.no === currentStageNo ? 'default' : 'secondary'}
-                      className="w-full h-auto justify-start text-left"
-                      disabled={!isLink}
-                    >
-                      {isLink ? (
-                        <Link
-                          href={`/rally/${rid}/${item.no}`}
-                          className="flex flex-col items-start p-3"
-                        >
-                          <h4 className="font-semibold whitespace-normal">
-                            {item.name.startsWith('SS')
-                              ? item.name
-                              : `SS${item.no} ${item.name}`}
-                          </h4>
-                          <div className="text-xs text-muted-foreground mt-1 flex flex-wrap gap-x-3 gap-y-1">
-                            <span className="flex items-center">
-                              <Calendar className="mr-1.5 h-3 w-3" />
-                              {new Date(item.date).toLocaleDateString('en-US', {
-                                month: 'short',
-                                day: 'numeric',
-                              })}
-                            </span>
-                            <span className="flex items-center">
-                              <Clock className="mr-1.5 h-3 w-3" />
-                              {item.time}
-                            </span>
-                            <span className="flex items-center">
-                              <Route className="mr-1.5 h-3 w-3" />
-                              {item.km} km
-                            </span>
-                          </div>
-                        </Link>
-                      ) : (
-                         <div className="flex flex-col items-start p-3 text-left">
-                            <h4 className="font-semibold whitespace-normal">
-                                {item.name}
-                            </h4>
-                         </div>
-                      )}
-                    </Button>
-                  </li>
+                  <Wrapper key={`${item.day}-${item.no}-${item.name}-${index}`} {...wrapperProps}>
+                     <div className={cn(
+                         "flex items-center space-x-4 p-3 rounded-md",
+                         isLink && "hover:bg-accent cursor-pointer",
+                         item.no === currentStageNo && "bg-primary text-primary-foreground"
+                     )}>
+                        <div className="w-6 text-center">
+                            <ItineraryRowIcon icon={item.icon} stageNo={item.no} />
+                        </div>
+                        <div className="flex-1 font-semibold">
+                            {item.name}
+                        </div>
+                        <div className="w-16 text-right text-sm text-muted-foreground">
+                            {isLink && `${item.km} km`}
+                        </div>
+                        <div className="w-16 text-right text-sm text-muted-foreground">
+                            {item.time}
+                        </div>
+                     </div>
+                  </Wrapper>
                 )
               })}
-            </ul>
+            </div>
           )}
         </div>
       </SheetContent>
