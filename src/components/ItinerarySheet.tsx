@@ -38,8 +38,7 @@ export default function ItinerarySheet() {
           throw new Error('Failed to fetch itinerary');
         }
         const data: ItineraryItem[] = await response.json();
-        // Filter for actual stages with a positive number
-        setItinerary(data.filter((item) => item.icon !== 'road' && parseInt(item.no, 10) > 0));
+        setItinerary(data);
       } catch (error) {
         console.error('Failed to fetch itinerary:', error);
         toast({
@@ -85,11 +84,11 @@ export default function ItinerarySheet() {
                 const isLink = parseInt(item.no, 10) > 0;
                 
                 return (
-                  <li key={item.no}>
+                  <li key={`${item.day}-${item.no}-${item.name}`}>
                     <Button
                       asChild={isLink}
                       variant={item.no === currentStageNo ? 'default' : 'secondary'}
-                      className="w-full h-auto justify-start"
+                      className="w-full h-auto justify-start text-left"
                       disabled={!isLink}
                     >
                       {isLink ? (
@@ -97,7 +96,7 @@ export default function ItinerarySheet() {
                           href={`/rally/${rid}/${item.no}`}
                           className="flex flex-col items-start p-3"
                         >
-                          <h4 className="font-semibold">
+                          <h4 className="font-semibold whitespace-normal">
                             {item.name.startsWith('SS')
                               ? item.name
                               : `SS${item.no} ${item.name}`}
@@ -122,7 +121,7 @@ export default function ItinerarySheet() {
                         </Link>
                       ) : (
                          <div className="flex flex-col items-start p-3 text-left">
-                            <h4 className="font-semibold">
+                            <h4 className="font-semibold whitespace-normal">
                                 {item.name}
                             </h4>
                          </div>
