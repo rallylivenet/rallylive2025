@@ -16,7 +16,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import type { StageResult, OverallResult, RallyCategory } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
-import { ArrowLeft, Sparkles, Filter } from 'lucide-react';
+import { ArrowLeft, Sparkles, Filter, Users, Flag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { summarizeStageResults } from '@/ai/flows/summarize-stage-results';
 import {
@@ -27,8 +27,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import ItinerarySheet from '@/components/ItinerarySheet';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-
 
 export default function RallyStagePage() {
   const params = useParams();
@@ -89,7 +87,7 @@ export default function RallyStagePage() {
         const overallResultsData: OverallResult[] = await overallResultsResponse.json();
         const stageNameData = await stageNameResponse.json();
         
-        if (stageNameData && stageNameData.etaplar) {
+        if (stageNameData && stageNameData.etaplar && Array.isArray(stageNameData.etaplar)) {
             const currentStageInfo = stageNameData.etaplar.find((e: any) => e.no === stage_no);
             setStageName(currentStageInfo ? `SS${stage_no} ${currentStageInfo.name}` : `Stage ${stage_no}`);
         } else {
@@ -207,34 +205,39 @@ export default function RallyStagePage() {
         </Card>
       )}
 
-      <Tabs defaultValue="stage" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="stage">Stage Results {selectedClass !== 'All' && `(${selectedClass})`}</TabsTrigger>
-          <TabsTrigger value="overall">Overall Standings {selectedClass !== 'All' && `(${selectedClass})`}</TabsTrigger>
-        </TabsList>
-        <TabsContent value="stage">
-            <Card>
-                <CardContent className="p-0">
-                     {loading ? (
-                        <ResultsTableSkeleton />
-                    ) : (
-                        <ResultsTable data={stageResults} type="stage" />
-                    )}
-                </CardContent>
-            </Card>
-        </TabsContent>
-        <TabsContent value="overall">
-            <Card>
-                <CardContent className="p-0">
-                    {loading ? (
-                        <ResultsTableSkeleton />
-                    ) : (
-                        <ResultsTable data={overallResults} type="overall" />
-                    )}
-                </CardContent>
-            </Card>
-        </TabsContent>
-      </Tabs>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center">
+                    <Flag className="mr-2 h-5 w-5" />
+                    Stage Results {selectedClass !== 'All' && `(${selectedClass})`}
+                </CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+                 {loading ? (
+                    <ResultsTableSkeleton />
+                ) : (
+                    <ResultsTable data={stageResults} type="stage" />
+                )}
+            </CardContent>
+        </Card>
+
+        <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center">
+                    <Users className="mr-2 h-5 w-5" />
+                    Overall Standings {selectedClass !== 'All' && `(${selectedClass})`}
+                </CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+                {loading ? (
+                    <ResultsTableSkeleton />
+                ) : (
+                    <ResultsTable data={overallResults} type="overall" />
+                )}
+            </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
@@ -249,26 +252,28 @@ const ResultsTable = ({ data, type }: { data: (StageResult[] | OverallResult[]),
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[60px]">Pos</TableHead>
-              <TableHead>Driver</TableHead>
-              <TableHead className="text-right">Time</TableHead>
-              <TableHead className="text-right hidden sm:table-cell">Diff.</TableHead>
+              <TableHead className="w-[50px] p-2">Pos</TableHead>
+              <TableHead className="p-2">Driver</TableHead>
+              <TableHead className="text-right p-2">Time</TableHead>
+              <TableHead className="text-right p-2 hidden md:table-cell">Leader</TableHead>
+              <TableHead className="text-right p-2 hidden sm:table-cell">Prev.</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {data.map((item, index) => (
             <TableRow key={index}>
-                <TableCell className="p-2 sm:p-4">
+                <TableCell className="p-2">
                   <div className="font-bold">{item.rank}</div>
                   <div className="text-xs text-muted-foreground">#{item.door_no}</div>
                 </TableCell>
-                <TableCell className="p-2 sm:p-4">
+                <TableCell className="p-2">
                   <div className="font-medium">{`${item.driver_name.charAt(0)}. ${item.driver_surname}`}</div>
                   <div className="text-sm text-muted-foreground">{`${item.codriver_name.charAt(0)}. ${item.codriver_surname}`}</div>
                   <div className="text-xs text-muted-foreground/80">{item.car_brand}</div>
                 </TableCell>
-                <TableCell className="p-2 sm:p-4 text-right font-mono text-xs sm:text-sm">{type === 'stage' ? (item as StageResult).stage_time : (item as OverallResult).total_time}</TableCell>
-                <TableCell className="p-2 sm:p-4 text-right font-mono hidden sm:table-cell">{item.diff_to_leader}</TableCell>
+                <TableCell className="p-2 text-right font-mono text-xs sm:text-sm">{type === 'stage' ? (item as StageResult).stage_time : (item as OverallResult).total_time}</TableCell>
+                <TableCell className="p-2 text-right font-mono text-xs hidden md:table-cell">{item.diff_to_leader}</TableCell>
+                <TableCell className="p-2 text-right font-mono text-xs hidden sm:table-cell">{item.diff_to_previous}</TableCell>
             </TableRow>
             ))}
         </TableBody>
