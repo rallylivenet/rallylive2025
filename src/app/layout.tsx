@@ -35,7 +35,6 @@ export default function RootLayout({
             src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3358665652492622"
             crossOrigin="anonymous"
             strategy="lazyOnload"
-          />
           {gaMeasurementId && (
             <>
               <Script
