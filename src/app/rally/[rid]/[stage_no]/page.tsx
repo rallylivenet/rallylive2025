@@ -162,12 +162,17 @@ export default function RallyStagePage() {
         });
       }
     } catch (error) {
-      console.error("Failed to share:", error);
-      toast({
-        variant: "destructive",
-        title: "Sharing Failed",
-        description: "Could not share the summary.",
-      });
+       if (error instanceof DOMException && error.name === 'AbortError') {
+        // Silently ignore if the user cancels the share dialog
+        console.log('Share canceled by user.');
+      } else {
+        console.error("Failed to share:", error);
+        toast({
+          variant: "destructive",
+          title: "Sharing Failed",
+          description: "Could not share the summary.",
+        });
+      }
     }
   };
 
