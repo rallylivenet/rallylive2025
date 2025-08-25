@@ -17,7 +17,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import type { StageResult, OverallResult, RallyCategory, ItineraryItem } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
-import { ArrowLeft, Sparkles, Filter, Users, Flag, Share2 } from 'lucide-react';
+import { ArrowLeft, Sparkles, Filter, Users, Flag, Share2, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { summarizeStageResults } from '@/ai/flows/summarize-stage-results';
 import {
@@ -253,11 +253,17 @@ export default function RallyStagePage() {
                 <Sparkles className="mr-2 h-4 w-4 text-primary" />
                 AI Stage Summary
               </CardTitle>
-              {!isSummarizing && summary && (
-                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleShareSummary}>
-                  <Share2 className="h-4 w-4" />
-                  <span className="sr-only">Share summary</span>
-                </Button>
+               {!isSummarizing && summary && (
+                <div className="flex items-center gap-1">
+                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleShareSummary}>
+                    <Share2 className="h-4 w-4" />
+                    <span className="sr-only">Share summary</span>
+                  </Button>
+                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setSummary('')}>
+                      <X className="h-4 w-4" />
+                      <span className="sr-only">Close summary</span>
+                  </Button>
+                </div>
               )}
             </CardHeader>
             <CardContent className="p-4 pt-0">
@@ -350,7 +356,7 @@ const ResultsTable = ({ data, type }: { data: (StageResult[] | OverallResult[]),
           <TableBody>
             {data.map((item, index) => {
               const penaltyStr = type === 'overall' ? formatPenalty((item as OverallResult).penalty_time) : '';
-              const flagUrl = item.driver_flag ? `https://rallylive.net/images/flags/16/${item.driver_flag}.png` : null;
+              const flagUrl = item.driver_flag ? `https://rallylive.net/images/flags/16/${item.driver_flag}` : null;
               return (
                 <TableRow key={index}>
                     <TableCell className="p-1 text-center font-bold align-top">
@@ -421,3 +427,6 @@ const ResultsTableSkeleton = () => {
         </div>
     )
 }
+
+
+    
