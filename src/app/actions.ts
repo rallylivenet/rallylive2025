@@ -1,1 +1,32 @@
-// This file is intentionally blank.
+
+'use server';
+
+import { answerRallyQuestion } from '@/ai/flows/answer-rally-question';
+import { AskAiAboutRallyFormSchema, type AskAiAboutRallyFormValues } from '@/lib/types';
+
+export async function askAiAction(
+  data: AskAiAboutRallyFormValues
+): Promise<{ success: boolean; answer?: string; error?: string }> {
+  
+  const validation = AskAiAboutRallyFormSchema.safeParse(data);
+
+  if (!validation.success) {
+    return { success: false, error: 'Invalid data provided.' };
+  }
+
+  const { rid, stage_no, question, rallyName, stageName } = validation.data;
+  
+  try {
+    const result = await answerRallyQuestion({ rid, stage_no, question, rallyName, stageName });
+    if (result.answer) {
+      return { success: true, answer: result.answer };
+    }
+    return { success: false, error: 'AI generation failed to produce an answer.' };
+  } catch (error) {
+    console.error('Error calling Genkit flow:', error);
+    if (error instanceof Error) {
+        return { success: false, error: error.message };
+    }
+    return { success: false, error: 'An unexpected error occurred during AI generation.' };
+  }
+}

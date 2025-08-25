@@ -1,5 +1,3 @@
-
-
 import {z} from 'zod';
 
 export interface Rally {
@@ -178,3 +176,28 @@ export const AdminPushFormSchema = RallyUpdateInputSchema.extend({
     overallLeaderLead: z.string().optional(),
 });
 export type AdminPushFormValues = z.infer<typeof AdminPushFormSchema>;
+
+export const AnswerRallyQuestionInputSchema = z.object({
+    rid: z.string(),
+    stage_no: z.string(),
+    question: z.string(),
+    rallyName: z.string(),
+    stageName: z.string(),
+    stageResults: z.array(z.any()).optional(),
+    overallResults: z.array(z.any()).optional(),
+});
+export type AnswerRallyQuestionInput = z.infer<typeof AnswerRallyQuestionInputSchema>;
+
+export const AnswerRallyQuestionOutputSchema = z.object({
+    answer: z.string().describe('The answer to the user\'s question about the rally.'),
+});
+export type AnswerRallyQuestionOutput = z.infer<typeof AnswerRallyQuestionOutputSchema>;
+
+export const AskAiAboutRallyFormSchema = z.object({
+    rid: z.string(),
+    stage_no: z.string(),
+    question: z.string(),
+    rallyName: z.string(),
+    stageName: z.string(),
+});
+export type AskAiAboutRallyFormValues = z.infer<typeof AskAiAboutRallyFormSchema>;

@@ -17,7 +17,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import type { StageResult, OverallResult, RallyCategory, ItineraryItem } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
-import { ArrowLeft, Sparkles, Filter, Users, Flag, Share2, X } from 'lucide-react';
+import { ArrowLeft, Sparkles, Filter, Users, Flag, Share2, X, MessageSquareQuestion } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { summarizeStageResults } from '@/ai/flows/summarize-stage-results';
 import {
@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/select";
 import ItinerarySheet from '@/components/ItinerarySheet';
 import NavigationMenu from '@/components/NavigationMenu';
+import AskAiAboutRallyDialog from '@/components/AskAiAboutRallyDialog';
 
 export default function RallyStagePage() {
   const params = useParams();
@@ -40,6 +41,7 @@ export default function RallyStagePage() {
   const [overallResults, setOverallResults] = React.useState<OverallResult[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [stageName, setStageName] = React.useState('');
+  const [rallyName, setRallyName] = React.useState('');
   const [summary, setSummary] = React.useState('');
   const [isSummarizing, setIsSummarizing] = React.useState(false);
   const [categories, setCategories] = React.useState<RallyCategory[]>([]);
@@ -61,7 +63,21 @@ export default function RallyStagePage() {
             // Non-critical, so we don't show a toast
         }
     }
+    async function fetchRallyName() {
+      try {
+        const response = await fetch(`https://www.rallylive.net/wp-json/rally/v1/live-results?rid=${rid}`);
+        if(response.ok) {
+            const data = await response.json();
+            if (data.length > 0) {
+              setRallyName(data[0].title);
+            }
+        }
+      } catch(e) {
+        console.error('Could not fetch rally name');
+      }
+    }
     fetchCategories();
+    fetchRallyName();
 
   }, [rid]);
 
@@ -216,8 +232,8 @@ export default function RallyStagePage() {
           <div className="w-[150px]"></div> {/* Spacer to balance the back button */}
         </div>
 
-        <div className="mb-4 flex flex-wrap gap-4 items-center justify-between">
-              <div className="flex items-center gap-2 md:gap-4">
+        <div className="mb-4 flex flex-wrap gap-2 items-center justify-between">
+              <div className="flex items-center gap-2">
                   <ItinerarySheet />
                   {categories.length > 0 && (
                       <div className="flex items-center gap-2">
@@ -238,11 +254,18 @@ export default function RallyStagePage() {
                       </div>
                   )}
               </div>
-              <Button onClick={handleGenerateSummary} disabled={isSummarizing || loading} size="sm" className="md:w-auto w-10 h-9 p-0 md:px-3">
-                  <Sparkles className="h-4 w-4 md:mr-2" />
-                  <span className="hidden md:inline">{isSummarizing ? 'Generating...' : 'AI Summary'}</span>
-                  <span className="sr-only">AI Summary</span>
-              </Button>
+              <div className="flex items-center gap-2">
+                <AskAiAboutRallyDialog 
+                  rid={rid}
+                  stage_no={stage_no}
+                  rallyName={rallyName}
+                  stageName={stageName}
+                />
+                <Button onClick={handleGenerateSummary} disabled={isSummarizing || loading} size="sm" className="h-9 px-3">
+                    <Sparkles className="h-4 w-4 md:mr-2" />
+                    <span className="hidden md:inline">{isSummarizing ? 'Generating...' : 'AI Summary'}</span>
+                </Button>
+              </div>
         </div>
 
         {(isSummarizing || summary) && (
@@ -426,8 +449,3 @@ const ResultsTableSkeleton = () => {
         </div>
     )
 }
-
-
-    
-
-    
