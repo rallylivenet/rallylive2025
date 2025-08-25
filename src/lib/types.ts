@@ -185,6 +185,7 @@ export const AnswerRallyQuestionInputSchema = z.object({
     stageName: z.string(),
     stageResults: z.array(z.any()).optional(),
     overallResults: z.array(z.any()).optional(),
+    itinerary: z.array(z.any()).optional(),
 });
 export type AnswerRallyQuestionInput = z.infer<typeof AnswerRallyQuestionInputSchema>;
 

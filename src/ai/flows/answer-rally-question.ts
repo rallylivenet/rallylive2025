@@ -12,22 +12,24 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 import { AnswerRallyQuestionInputSchema, AnswerRallyQuestionOutputSchema } from '@/lib/types';
-import type { AnswerRallyQuestionInput, AnswerRallyQuestionOutput, StageResult, OverallResult } from '@/lib/types';
+import type { AnswerRallyQuestionInput, AnswerRallyQuestionOutput, StageResult, OverallResult, ItineraryItem } from '@/lib/types';
 
-async function getRallyData(rid: string, stage_no: string): Promise<{ stageResults: StageResult[], overallResults: OverallResult[] }> {
-    const [stageResultsResponse, overallResultsResponse] = await Promise.all([
+async function getRallyData(rid: string, stage_no: string): Promise<{ stageResults: StageResult[], overallResults: OverallResult[], itinerary: ItineraryItem[] }> {
+    const [stageResultsResponse, overallResultsResponse, itineraryResponse] = await Promise.all([
         fetch(`https://www.rallylive.net/mobileapp/v1/json-stagetimes.php?rid=${rid}&stage_no=${stage_no}`),
-        fetch(`https://www.rallylive.net/mobileapp/v1/json-overall.php?rid=${rid}&stage_no=${stage_no}`)
+        fetch(`https://www.rallylive.net/mobileapp/v1/json-overall.php?rid=${rid}&stage_no=${stage_no}`),
+        fetch(`https://www.rallylive.net/mobileapp/v1/rally-itinerary.php?rid=${rid}`)
     ]);
 
-    if (!stageResultsResponse.ok || !overallResultsResponse.ok) {
+    if (!stageResultsResponse.ok || !overallResultsResponse.ok || !itineraryResponse.ok) {
         throw new Error('Failed to fetch rally data');
     }
 
     const stageResults = await stageResultsResponse.json();
     const overallResults = await overallResultsResponse.json();
+    const itinerary = await itineraryResponse.json();
     
-    return { stageResults, overallResults };
+    return { stageResults, overallResults, itinerary };
 }
 
 
@@ -41,7 +43,7 @@ const prompt = ai.definePrompt({
   output: {schema: AnswerRallyQuestionOutputSchema},
   prompt: `You are a rally expert and commentator.
   Your task is to answer the user's question about the rally based on the provided data.
-  The data includes stage results and overall standings.
+  The data includes stage results, overall standings, and the rally itinerary.
   Provide a clear, concise, and friendly answer. Use markdown for formatting if needed.
 
   Rally Name: {{{rallyName}}}
@@ -57,6 +59,11 @@ const prompt = ai.definePrompt({
   {{#each overallResults}}
   - Rank {{rank}}: {{driver_surname}} ({{car_brand}}), Time: {{total_time}}, Diff: {{diff_to_leader}}
   {{/each}}
+  
+  Here is the rally itinerary:
+  {{#each itinerary}}
+  - {{#if no}}{{no}}: {{/if}}{{name}} - {{km}} km - Starts at {{time}}
+  {{/each}}
 
   Answer:
   `,
@@ -71,14 +78,15 @@ const answerRallyQuestionFlow = ai.defineFlow(
   async (input) => {
     const { rid, stage_no, question, rallyName, stageName } = input;
 
-    const { stageResults, overallResults } = await getRallyData(rid, stage_no);
+    const { stageResults, overallResults, itinerary } = await getRallyData(rid, stage_no);
 
     const promptInput = {
         rallyName,
         stageName,
         question,
         stageResults: stageResults.slice(0, 10),
-        overallResults: overallResults.slice(0, 10)
+        overallResults: overallResults.slice(0, 10),
+        itinerary: itinerary
     };
     
     const {output} = await prompt(promptInput);
