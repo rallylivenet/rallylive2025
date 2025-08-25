@@ -31,15 +31,6 @@ const EventItem = ({ event }: { event: RallyEvent }) => {
         return <Link href={link}>{content}</Link>;
     }
     
-    // Fallback for events that may not be directly linkable in the app
-    if (event.Link && !event.Link.includes('|') && !event.Link.startsWith('http')) {
-        return <Link href={event.Link}>{content}</Link>;
-    }
-    if (event.Link && event.Link.startsWith('http')) {
-        return <a href={event.Link} target="_blank" rel="noopener noreferrer">{content}</a>;
-    }
-
-
     return <div className="cursor-default">{content}</div>;
 };
 
