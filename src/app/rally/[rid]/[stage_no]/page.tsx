@@ -358,14 +358,19 @@ const ResultsTable = ({ data, type }: { data: (StageResult[] | OverallResult[]),
                     </TableCell>
                     <TableCell className="p-1 align-top">
                       {/* Compact view for mobile */}
-                      <div className="md:hidden">
-                        <div className="font-bold whitespace-nowrap flex items-center">
-                          {flagUrl && <Image src={flagUrl} alt={item.driver_flag} width={16} height={11} className="mr-1.5" unoptimized />}
-                          {`${item.driver_surname.toUpperCase()}`}
+                      <div className="flex items-start gap-1.5 md:hidden">
+                        <div className="w-4 flex-shrink-0 text-center">
+                          {flagUrl && <Image src={flagUrl} alt={item.driver_flag} width={16} height={11} unoptimized />}
+                          <div className="text-[10px] font-bold text-muted-foreground">{item.door_no}</div>
                         </div>
-                        <div className="text-muted-foreground/80 flex flex-col pl-[22px]">
-                           <span>#{item.door_no} {item.car_version}</span>
-                           {penaltyStr && <div className="text-destructive font-bold">{penaltyStr}</div>}
+                        <div className="flex-1">
+                          <div className="font-bold whitespace-nowrap">
+                            {`${item.driver_surname.toUpperCase()}`}
+                          </div>
+                          <div className="text-muted-foreground/80 flex flex-col">
+                             <span>{item.car_version}</span>
+                             {penaltyStr && <div className="text-destructive font-bold">{penaltyStr}</div>}
+                          </div>
                         </div>
                       </div>
                       {/* Detailed view for wider screens */}
