@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import type { StageResult, OverallResult, RallyCategory } from '@/lib/types';
+import type { StageResult, OverallResult, RallyCategory, LastStageFromApi } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { ArrowLeft, Sparkles, Filter, Users, Flag } from 'lucide-react';
@@ -85,7 +85,7 @@ export default function RallyStagePage() {
 
         const stageResultsData: StageResult[] = await stageResultsResponse.json();
         const overallResultsData: OverallResult[] = await overallResultsResponse.json();
-        const stageNameData = await stageNameResponse.json();
+        const stageNameData: LastStageFromApi = await stageNameResponse.json();
         
         if (stageNameData && stageNameData.etaplar && Array.isArray(stageNameData.etaplar)) {
             const currentStageInfo = stageNameData.etaplar.find((e: any) => e.no === stage_no);
@@ -339,3 +339,5 @@ const ResultsTableSkeleton = () => {
         </div>
     )
 }
+
+    
