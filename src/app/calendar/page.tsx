@@ -31,9 +31,14 @@ const EventItem = ({ event }: { event: RallyEvent }) => {
         return <Link href={link}>{content}</Link>;
     }
     
-    if (event.Link && !event.Link.includes('|')) {
+    // Fallback for events that may not be directly linkable in the app
+    if (event.Link && !event.Link.includes('|') && !event.Link.startsWith('http')) {
         return <Link href={event.Link}>{content}</Link>;
     }
+    if (event.Link && event.Link.startsWith('http')) {
+        return <a href={event.Link} target="_blank" rel="noopener noreferrer">{content}</a>;
+    }
+
 
     return <div className="cursor-default">{content}</div>;
 };
@@ -206,7 +211,7 @@ export default function CalendarPage() {
                       {upcomingEvents.length > 0 ? (
                         <div className="space-y-3">
                           {upcomingEvents.map(event => (
-                            <EventItem key={event.id || event.Link} event={event} />
+                            <EventItem key={event.id || event.Link || event.RalliAdi} event={event} />
                           ))}
                         </div>
                       ) : (
@@ -218,7 +223,7 @@ export default function CalendarPage() {
                        {pastEvents.length > 0 ? (
                         <div className="space-y-3">
                           {pastEvents.map(event => (
-                            <EventItem key={event.id || event.Link} event={event} />
+                            <EventItem key={event.id || event.Link || event.RalliAdi} event={event} />
                           ))}
                         </div>
                       ) : (
@@ -231,7 +236,7 @@ export default function CalendarPage() {
                     <h4 className="font-bold text-lg mb-4">Events for {monthNames[selectedDate.getMonth()]} {selectedDate.getFullYear()}</h4>
                     <div className="space-y-3">
                       {events.map(event => (
-                         <EventItem key={event.id || event.Link} event={event} />
+                         <EventItem key={event.id || event.Link || event.RalliAdi} event={event} />
                       ))}
                     </div>
                   </div>
