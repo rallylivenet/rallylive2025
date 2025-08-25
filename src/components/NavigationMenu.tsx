@@ -131,12 +131,6 @@ export default function NavigationMenu() {
           </DropdownMenuSubTrigger>
           <DropdownMenuPortal>
             <DropdownMenuSubContent>
-                <Link href="/impressum" passHref>
-                    <DropdownMenuItem>
-                    <ChevronRight className="mr-2 h-4 w-4" />
-                    Impressum
-                    </DropdownMenuItem>
-                </Link>
                 <Link href="/privacy" passHref>
                     <DropdownMenuItem>
                     <ChevronRight className="mr-2 h-4 w-4" />
