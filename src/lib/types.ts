@@ -1,3 +1,4 @@
+
 import {z} from 'zod';
 
 export interface Rally {
@@ -62,6 +63,8 @@ export interface OverallLeaderFromApi {
 }
 
 export interface StageResult {
+    no?: string;
+    name?: string;
     rank: number;
     door_no: number;
     driver_name: string;
@@ -183,7 +186,7 @@ export const AnswerRallyQuestionInputSchema = z.object({
     question: z.string(),
     rallyName: z.string(),
     stageName: z.string(),
-    stageResults: z.array(z.any()).optional(),
+    allStageResults: z.record(z.array(z.any())).optional(),
     overallResults: z.array(z.any()).optional(),
     itinerary: z.array(z.any()).optional(),
 });
