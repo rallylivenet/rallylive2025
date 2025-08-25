@@ -89,10 +89,12 @@ export default function AskAiAboutRallyDialog({ rid, stage_no, rallyName, stageN
     setQuestion('');
   };
 
+  const isReady = !!rallyName && !!stageName;
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="h-9 px-3">
+        <Button variant="outline" size="sm" className="h-9 px-3" disabled={!isReady}>
           <MessageCircleQuestion className="h-4 w-4 md:mr-2" />
           <span className="hidden md:inline">Ask AI</span>
         </Button>
