@@ -145,7 +145,7 @@ export default function RallyStagePage() {
 
   return (
     <div className="container mx-auto px-2 sm:px-4 lg:px-8 py-4 md:py-8">
-      <div className="mb-4 relative flex justify-center items-center">
+       <div className="mb-4 relative flex justify-center items-center h-10">
         <div className="absolute left-0">
           <Link href="/">
             <Button variant="outline" size="sm">
@@ -154,7 +154,7 @@ export default function RallyStagePage() {
             </Button>
           </Link>
         </div>
-        <h2 className="text-lg md:text-xl font-bold text-center truncate">
+        <h2 className="text-lg md:text-xl font-bold text-center truncate px-16">
             {loading ? <Skeleton className="h-7 w-48" /> : stageName}
         </h2>
       </div>
@@ -181,9 +181,10 @@ export default function RallyStagePage() {
                     </div>
                 )}
             </div>
-            <Button onClick={handleGenerateSummary} disabled={isSummarizing || loading} size="sm">
-                <Sparkles className="mr-2 h-4 w-4" />
-                {isSummarizing ? 'Generating...' : 'AI Summary'}
+             <Button onClick={handleGenerateSummary} disabled={isSummarizing || loading} size="sm" className="md:w-auto w-10 h-9 p-0 md:px-3 md:w-auto">
+                <Sparkles className="h-4 w-4 md:mr-2" />
+                <span className="hidden md:inline">{isSummarizing ? 'Generating...' : 'AI Summary'}</span>
+                 <span className="sr-only">AI Summary</span>
             </Button>
       </div>
 
@@ -288,7 +289,7 @@ const ResultsTable = ({ data, type }: { data: (StageResult[] | OverallResult[]),
                         <div className="font-bold whitespace-nowrap">{`${item.driver_surname.toUpperCase()}`}</div>
                         <div className="text-muted-foreground/80 flex flex-col">
                            <span>#{item.door_no} {item.car_version}</span>
-                           {penaltyStr && <span className="text-destructive font-bold">{penaltyStr}</span>}
+                           {penaltyStr && <div className="text-destructive font-bold">{penaltyStr}</div>}
                         </div>
                       </div>
                       {/* Detailed view for wider screens */}
@@ -297,7 +298,7 @@ const ResultsTable = ({ data, type }: { data: (StageResult[] | OverallResult[]),
                         <div className="text-muted-foreground/90 text-[11px] whitespace-nowrap">{`${item.codriver_name} ${item.codriver_surname}`}</div>
                         <div className="text-muted-foreground/80 text-[11px] flex flex-col">
                           <span>#{item.door_no} {item.car_brand} {item.car_version}</span>
-                           {penaltyStr && <span className="text-destructive font-bold">{penaltyStr}</span>}
+                          {penaltyStr && <div className="text-destructive font-bold">{penaltyStr}</div>}
                         </div>
                       </div>
                     </TableCell>
