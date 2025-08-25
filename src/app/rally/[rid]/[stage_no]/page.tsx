@@ -350,6 +350,7 @@ const ResultsTable = ({ data, type }: { data: (StageResult[] | OverallResult[]),
           <TableBody>
             {data.map((item, index) => {
               const penaltyStr = type === 'overall' ? formatPenalty((item as OverallResult).penalty_time) : '';
+              const flagUrl = item.driver_flag ? `https://rallylive.net/images/flags/16/${item.driver_flag}.png` : null;
               return (
                 <TableRow key={index}>
                     <TableCell className="p-1 text-center font-bold align-top">
@@ -358,17 +359,23 @@ const ResultsTable = ({ data, type }: { data: (StageResult[] | OverallResult[]),
                     <TableCell className="p-1 align-top">
                       {/* Compact view for mobile */}
                       <div className="md:hidden">
-                        <div className="font-bold whitespace-nowrap">{`${item.driver_surname.toUpperCase()}`}</div>
-                        <div className="text-muted-foreground/80 flex flex-col">
+                        <div className="font-bold whitespace-nowrap flex items-center">
+                          {flagUrl && <Image src={flagUrl} alt={item.driver_flag} width={16} height={11} className="mr-1.5" unoptimized />}
+                          {`${item.driver_surname.toUpperCase()}`}
+                        </div>
+                        <div className="text-muted-foreground/80 flex flex-col pl-[22px]">
                            <span>#{item.door_no} {item.car_version}</span>
                            {penaltyStr && <div className="text-destructive font-bold">{penaltyStr}</div>}
                         </div>
                       </div>
                       {/* Detailed view for wider screens */}
                       <div className="hidden md:block">
-                        <div className="font-bold whitespace-nowrap">{`${item.driver_name.toUpperCase()} ${item.driver_surname.toUpperCase()}`}</div>
-                        <div className="text-muted-foreground/90 text-[11px] whitespace-nowrap">{`${item.codriver_name} ${item.codriver_surname}`}</div>
-                        <div className="text-muted-foreground/80 text-[11px] flex flex-col">
+                        <div className="font-bold whitespace-nowrap flex items-center">
+                          {flagUrl && <Image src={flagUrl} alt={item.driver_flag} width={16} height={11} className="mr-1.5" unoptimized />}
+                          {`${item.driver_name.toUpperCase()} ${item.driver_surname.toUpperCase()}`}
+                        </div>
+                        <div className="text-muted-foreground/90 text-[11px] whitespace-nowrap pl-[22px]">{`${item.codriver_name} ${item.codriver_surname}`}</div>
+                        <div className="text-muted-foreground/80 text-[11px] flex flex-col pl-[22px]">
                           <span>
                             #{item.door_no} {item.car_brand} {item.car_version}
                             {penaltyStr && <span className="text-destructive font-bold ml-2">{penaltyStr}</span>}
