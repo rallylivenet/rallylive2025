@@ -20,7 +20,6 @@ export default {
       fontFamily: {
         body: ['"Nunito Sans"', 'sans-serif'],
         headline: ['"Space Grotesk"', 'sans-serif'],
-        code: ['"M PLUS 1 Code"', 'monospace'],
       },
       colors: {
         background: 'hsl(var(--background))',

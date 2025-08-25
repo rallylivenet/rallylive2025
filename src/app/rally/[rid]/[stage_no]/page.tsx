@@ -276,7 +276,7 @@ const ResultsTable = ({ data, type }: { data: (StageResult[] | OverallResult[]),
                     <div className="text-muted-foreground/80 text-[11px]">#{item.door_no} {item.car_brand} {item.car_version}</div>
                   </div>
                 </TableCell>
-                <TableCell className="p-1 text-right font-code align-top">
+                <TableCell className="p-1 text-right align-top">
                     <div>{type === 'stage' ? (item as StageResult).stage_time : (item as OverallResult).total_time}</div>
                     <div className="text-muted-foreground">
                        {item.diff_to_leader}
