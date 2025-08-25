@@ -22,7 +22,7 @@ const AdMob = ({ adSlot }: AdMobProps) => {
     } catch (err) {
       console.error("adsbygoogle.push() error:", err);
     }
-  }, [adSlot]);
+  }, []);
 
   return (
     <div key={adSlot}>
