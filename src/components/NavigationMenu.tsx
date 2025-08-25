@@ -16,7 +16,7 @@ import {
   DropdownMenuPortal,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { Menu, LogIn, Bell, Calendar, History, FileText, Home, Loader2, ChevronRight } from 'lucide-react';
+import { Menu, LogIn, Bell, Calendar, History, FileText, Home, Loader2, ChevronRight, Mail } from 'lucide-react';
 import type { RallyFromApi, LastStageFromApi, LiveRallyMenuItem } from '@/lib/types';
 
 
@@ -116,6 +116,12 @@ export default function NavigationMenu() {
           <DropdownMenuItem>
             <Bell className="mr-2 h-4 w-4" />
             <span>Notifications</span>
+          </DropdownMenuItem>
+        </Link>
+         <Link href="/contact" passHref>
+          <DropdownMenuItem>
+            <Mail className="mr-2 h-4 w-4" />
+            <span>Contact</span>
           </DropdownMenuItem>
         </Link>
         <Link href="/privacy" passHref>
