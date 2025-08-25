@@ -37,10 +37,15 @@ export default function CalendarPage() {
         if (!response.ok) {
           throw new Error('Failed to fetch events');
         }
-        const data: RallyEvent[] = await response.json();
-        setEvents(data);
+        const data = await response.json();
+        if (Array.isArray(data)) {
+          setEvents(data);
+        } else {
+          setEvents([]); // Ensure events is always an array
+        }
       } catch (error) {
         console.error('Failed to fetch events:', error);
+        setEvents([]); // Reset to empty array on error
         toast({
           variant: 'destructive',
           title: 'Error fetching events',
@@ -80,8 +85,8 @@ export default function CalendarPage() {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  const upcomingEvents = events.filter(event => new Date(event.Tarih) >= today);
-  const pastEvents = events.filter(event => new Date(event.Tarih) < today);
+  const upcomingEvents = Array.isArray(events) ? events.filter(event => new Date(event.Tarih) >= today) : [];
+  const pastEvents = Array.isArray(events) ? events.filter(event => new Date(event.Tarih) < today) : [];
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
