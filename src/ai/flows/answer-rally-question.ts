@@ -76,7 +76,7 @@ const prompt = ai.definePrompt({
   Here are the results for each stage (top 5 for brevity):
   {{#each allStageResults}}
   Stage {{this.[0].no}}: {{this.[0].name}}
-    {{#each (slice this 0 5)}}
+    {{#each this}}
     - Rank {{rank}}: {{driver_surname}}, Time: {{stage_time}}, Diff: {{diff_to_leader}}
     {{/each}}
   {{/each}}
