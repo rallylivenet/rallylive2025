@@ -10,7 +10,6 @@
  */
 
 import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
 import { AnswerRallyQuestionInputSchema, AnswerRallyQuestionOutputSchema } from '@/lib/types';
 import type { AnswerRallyQuestionInput, AnswerRallyQuestionOutput, StageResult, OverallResult, ItineraryItem } from '@/lib/types';
 
@@ -55,9 +54,13 @@ export async function answerRallyQuestion(input: AnswerRallyQuestionInput): Prom
   return answerRallyQuestionFlow(input);
 }
 
-const prompt = ai.definePrompt({
+const answerRallyQuestionPrompt = ai.definePrompt({
   name: 'answerRallyQuestionPrompt',
-  input: {schema: AnswerRallyQuestionInputSchema},
+  input: {schema: AnswerRallyQuestionInputSchema.extend({
+      allStageResults: ai.defineSchema('allStageResults', {}),
+      overallResults: ai.defineSchema('overallResults', []),
+      itinerary: ai.defineSchema('itinerary', []),
+  })},
   output: {schema: AnswerRallyQuestionOutputSchema},
   prompt: `You are a rally expert and commentator.
   Your task is to answer the user's question about the rally based on the provided data.
@@ -102,15 +105,13 @@ const answerRallyQuestionFlow = ai.defineFlow(
     const { allStageResults, overallResults, itinerary } = await getRallyData(rid, stage_no);
 
     const promptInput = {
-        rallyName,
-        stageName,
-        question,
+        ...input,
         allStageResults: allStageResults,
         overallResults: overallResults.slice(0, 10),
         itinerary: itinerary
     };
     
-    const {output} = await prompt(promptInput);
+    const {output} = await answerRallyQuestionPrompt(promptInput);
     return output!;
   }
 );

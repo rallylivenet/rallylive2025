@@ -1,7 +1,7 @@
 
 'use server';
 
-import { answerRallyQuestion } from '@/ai/flows/answer-rally-question';
+import { answerRallyQuestion, type AnswerRallyQuestionInput } from '@/ai/flows/answer-rally-question';
 import { AskAiAboutRallyFormSchema, type AskAiAboutRallyFormValues } from '@/lib/types';
 
 export async function askAiAction(
