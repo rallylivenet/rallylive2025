@@ -26,6 +26,9 @@ export default function RootLayout({
       <head>
         <title>RallyLive Net</title>
         <meta name="description" content="Live rally stage results publishing website" />
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#1c3faa" />
+        <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,400;0,6..12,700;1,6..12,400;1,6..12,700&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet" />
