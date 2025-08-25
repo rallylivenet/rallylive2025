@@ -208,7 +208,7 @@ export default function RallyStagePage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <Card>
             <CardHeader>
-                <CardTitle className="flex items-center">
+                <CardTitle className="flex items-center justify-center text-lg">
                     <Flag className="mr-2 h-5 w-5" />
                     Stage Results {selectedClass !== 'All' && `(${selectedClass})`}
                 </CardTitle>
@@ -224,7 +224,7 @@ export default function RallyStagePage() {
 
         <Card>
             <CardHeader>
-                <CardTitle className="flex items-center">
+                <CardTitle className="flex items-center justify-center text-lg">
                     <Users className="mr-2 h-5 w-5" />
                     Overall Standings {selectedClass !== 'All' && `(${selectedClass})`}
                 </CardTitle>
@@ -252,29 +252,34 @@ const ResultsTable = ({ data, type }: { data: (StageResult[] | OverallResult[]),
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[50px] p-2">Pos</TableHead>
+              <TableHead className="w-[50px] p-2 text-center">No</TableHead>
               <TableHead className="p-2">Driver</TableHead>
               <TableHead className="text-right p-2">Time</TableHead>
+              <TableHead className="text-right p-2 whitespace-nowrap">Diff.Prev</TableHead>
+              <TableHead className="text-right p-2 whitespace-nowrap">Diff.Leader</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {data.map((item, index) => (
             <TableRow key={index}>
-                <TableCell className="p-2">
-                  <div className="font-bold">{item.rank}</div>
-                  <div className="text-xs text-muted-foreground">#{item.door_no}</div>
+                <TableCell className="p-2 text-center align-top">
+                  <div className="font-bold text-lg">{item.rank}</div>
+                  <div className="text-sm text-muted-foreground">#{item.door_no}</div>
                 </TableCell>
-                <TableCell className="p-2">
-                  <div className="font-medium">{`${item.driver_name.charAt(0)}. ${item.driver_surname}`}</div>
-                  <div className="text-sm text-muted-foreground">{`${item.codriver_name.charAt(0)}. ${item.codriver_surname}`}</div>
+                <TableCell className="p-2 align-top">
+                  <div className="font-bold">{`${item.driver_name} ${item.driver_surname}`}</div>
+                  <div className="font-medium">{`${item.codriver_name} ${item.codriver_surname}`}</div>
                   <div className="text-xs text-muted-foreground/80">{item.car_brand}</div>
                 </TableCell>
-                <TableCell className="p-2 text-right font-mono text-xs sm:text-sm">
+                <TableCell className="p-2 text-right font-mono text-sm sm:text-base align-top">
                     <div>{type === 'stage' ? (item as StageResult).stage_time : (item as OverallResult).total_time}</div>
-                    <div className="text-xs text-muted-foreground">
-                        <div>{item.diff_to_leader}</div>
-                        <div>{item.diff_to_previous}</div>
-                    </div>
+                     {type === 'overall' && (item as OverallResult).penalty_time !== '00:00.0' && <div className="text-xs text-destructive">P: {(item as OverallResult).penalty_time}</div>}
+                </TableCell>
+                 <TableCell className="p-2 text-right font-mono text-xs sm:text-sm align-top">
+                    <div>{item.diff_to_previous}</div>
+                </TableCell>
+                <TableCell className="p-2 text-right font-mono text-xs sm:text-sm align-top">
+                    <div>{item.diff_to_leader}</div>
                 </TableCell>
             </TableRow>
             ))}
@@ -294,12 +299,12 @@ const ResultsTableSkeleton = () => {
                         <Skeleton className="h-4 w-3/4" />
                         <Skeleton className="h-4 w-1/2" />
                     </div>
+                     <div className="space-y-2">
+                        <Skeleton className="h-4 w-16" />
+                        <Skeleton className="h-4 w-12" />
+                    </div>
                 </div>
             ))}
         </div>
     )
 }
-
-    
-
-    
