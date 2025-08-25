@@ -1,12 +1,88 @@
 
+'use client';
+
+import * as React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import NavigationMenu from '@/components/NavigationMenu';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Calendar as CalendarIcon, CalendarDays, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import { Skeleton } from '@/components/ui/skeleton';
+import type { RallyEvent } from '@/lib/types';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+
+const monthNames = [
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December"
+];
 
 export default function CalendarPage() {
+  const { toast } = useToast();
+  const [events, setEvents] = React.useState<RallyEvent[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  const [selectedDate, setSelectedDate] = React.useState(new Date());
+
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: 10 }, (_, i) => currentYear - 5 + i);
+
+  React.useEffect(() => {
+    async function fetchEvents() {
+      setLoading(true);
+      const year = selectedDate.getFullYear();
+      const month = selectedDate.getMonth() + 1;
+      try {
+        const response = await fetch(`https://www.rallylive.net/mobileapp/v1/get-events.php?year=${year}&month=${String(month).padStart(2, '0')}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch events');
+        }
+        const data: RallyEvent[] = await response.json();
+        setEvents(data);
+      } catch (error) {
+        console.error('Failed to fetch events:', error);
+        toast({
+          variant: 'destructive',
+          title: 'Error fetching events',
+          description: 'Could not load calendar events. Please try again later.',
+        });
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchEvents();
+  }, [selectedDate, toast]);
+
+  const handleMonthChange = (offset: number) => {
+    setSelectedDate(current => {
+      const newDate = new Date(current);
+      newDate.setMonth(newDate.getMonth() + offset);
+      return newDate;
+    });
+  };
+
+  const handleYearSelect = (year: string) => {
+    setSelectedDate(current => {
+        const newDate = new Date(current);
+        newDate.setFullYear(parseInt(year, 10));
+        return newDate;
+    });
+  };
+
+   const handleMonthSelect = (monthIndex: string) => {
+    setSelectedDate(current => {
+        const newDate = new Date(current);
+        newDate.setMonth(parseInt(monthIndex, 10));
+        return newDate;
+    });
+  };
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const upcomingEvents = events.filter(event => new Date(event.Tarih) >= today);
+  const pastEvents = events.filter(event => new Date(event.Tarih) < today);
+
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -42,10 +118,98 @@ export default function CalendarPage() {
         </div>
         <Card>
           <CardHeader>
-            <CardTitle>Calendar</CardTitle>
+            <CardTitle className="flex items-center text-2xl font-bold font-headline">
+                <CalendarDays className="mr-3 h-6 w-6" />
+                Rally Calendar
+            </CardTitle>
+            <CardDescription>Browse upcoming and past rally events.</CardDescription>
           </CardHeader>
           <CardContent>
-            <p>This is the calendar page. Content will be added here soon.</p>
+            <div className="flex flex-col sm:flex-row justify-between items-center mb-6 p-4 bg-muted rounded-lg">
+                <div className="flex items-center gap-2 mb-4 sm:mb-0">
+                    <Button variant="outline" size="icon" onClick={() => handleMonthChange(-1)}>
+                        <ChevronLeft className="h-4 w-4" />
+                    </Button>
+                    <h3 className="text-lg font-semibold w-32 text-center">
+                        {monthNames[selectedDate.getMonth()]} {selectedDate.getFullYear()}
+                    </h3>
+                     <Button variant="outline" size="icon" onClick={() => handleMonthChange(1)}>
+                        <ChevronRight className="h-4 w-4" />
+                    </Button>
+                </div>
+                <div className="flex gap-2">
+                    <Select
+                        value={String(selectedDate.getFullYear())}
+                        onValueChange={handleYearSelect}
+                    >
+                        <SelectTrigger className="w-[120px]">
+                            <SelectValue placeholder="Year" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {years.map(year => <SelectItem key={year} value={String(year)}>{year}</SelectItem>)}
+                        </SelectContent>
+                    </Select>
+                     <Select
+                        value={String(selectedDate.getMonth())}
+                        onValueChange={handleMonthSelect}
+                    >
+                        <SelectTrigger className="w-[140px]">
+                            <SelectValue placeholder="Month" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {monthNames.map((month, index) => <SelectItem key={month} value={String(index)}>{month}</SelectItem>)}
+                        </SelectContent>
+                    </Select>
+                </div>
+            </div>
+
+            {loading ? (
+                <div className="space-y-4">
+                  <Skeleton className="h-20 w-full" />
+                  <Skeleton className="h-20 w-full" />
+                  <Skeleton className="h-20 w-full" />
+                </div>
+            ) : (
+              events.length > 0 ? (
+                <div className="grid md:grid-cols-2 gap-8">
+                  <div>
+                    <h4 className="font-bold text-lg mb-4">Upcoming Rallies</h4>
+                    {upcomingEvents.length > 0 ? (
+                      <div className="space-y-3">
+                        {upcomingEvents.map(event => (
+                          <div key={event.Link} className="p-3 border rounded-md bg-card flex items-center justify-between">
+                            <span className="font-semibold">{event.RalliAdi}</span>
+                            <span className="text-sm text-muted-foreground">{new Date(event.Tarih).toLocaleDateString()}</span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-muted-foreground text-sm">No upcoming rallies for this month.</p>
+                    )}
+                  </div>
+                   <div>
+                    <h4 className="font-bold text-lg mb-4">Past Rallies</h4>
+                     {pastEvents.length > 0 ? (
+                      <div className="space-y-3">
+                        {pastEvents.map(event => (
+                           <div key={event.Link} className="p-3 border rounded-md bg-card flex items-center justify-between">
+                            <span className="font-semibold">{event.RalliAdi}</span>
+                            <span className="text-sm text-muted-foreground">{new Date(event.Tarih).toLocaleDateString()}</span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-muted-foreground text-sm">No past rallies for this month.</p>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-10">
+                  <CalendarIcon className="mx-auto h-12 w-12 text-muted-foreground" />
+                  <p className="mt-4 text-muted-foreground">No events found for the selected period.</p>
+                </div>
+              )
+            )}
           </CardContent>
         </Card>
       </main>

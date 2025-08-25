@@ -4,6 +4,7 @@
 
 
 
+
 export interface Rally {
   id: string;
   name: string;
@@ -136,3 +137,8 @@ export interface RallyCategory {
   occurrence: number;
 }
     
+export interface RallyEvent {
+  RalliAdi: string;
+  Tarih: string;
+  Link: string;
+}
