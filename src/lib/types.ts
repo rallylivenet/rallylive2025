@@ -3,6 +3,7 @@
 
 
 
+
 export interface Rally {
   id: string;
   name: string;
@@ -32,6 +33,7 @@ export interface LastStageFromApi {
     zaman: string;
     km: string;
     tarih: string;
+    etaplar?: { no: string, name: string }[];
 }
 
 export interface StageWinnerInfo {

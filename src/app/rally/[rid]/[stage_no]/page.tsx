@@ -26,6 +26,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import ItinerarySheet from '@/components/ItinerarySheet';
 
 
 export default function RallyStagePage() {
@@ -68,6 +69,8 @@ export default function RallyStagePage() {
 
     async function fetchData() {
       setLoading(true);
+      // Reset summary when stage changes
+      setSummary('');
       try {
         const classParam = selectedClass === 'All' ? '' : `&cls=${selectedClass}`;
 
@@ -85,8 +88,12 @@ export default function RallyStagePage() {
         const overallResultsData: OverallResult[] = await overallResultsResponse.json();
         const stageNameData = await stageNameResponse.json();
         
-        const currentStageInfo = stageNameData?.etaplar?.find((e: any) => e.no === stage_no);
-        setStageName(currentStageInfo ? `SS${stage_no} ${currentStageInfo.name}` : `Stage ${stage_no}`);
+        if (stageNameData && stageNameData.etaplar) {
+            const currentStageInfo = stageNameData.etaplar.find((e: any) => e.no === stage_no);
+            setStageName(currentStageInfo ? `SS${stage_no} ${currentStageInfo.name}` : `Stage ${stage_no}`);
+        } else {
+             setStageName(`Stage ${stage_no}`);
+        }
         
         setStageResults(stageResultsData);
         setOverallResults(overallResultsData);
@@ -140,12 +147,15 @@ export default function RallyStagePage() {
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
       <div className="mb-4 flex flex-wrap gap-4 justify-between items-center">
-        <Link href="/">
-          <Button variant="outline">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Rallies
-          </Button>
-        </Link>
+        <div className="flex gap-2">
+            <Link href="/">
+              <Button variant="outline">
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Back
+              </Button>
+            </Link>
+            <ItinerarySheet />
+        </div>
         <h2 className="text-xl font-bold text-right">{loading ? <Skeleton className="h-7 w-48" /> : stageName}</h2>
       </div>
 
