@@ -252,30 +252,27 @@ const ResultsTable = ({ data, type }: { data: (StageResult[] | OverallResult[]),
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[50px] p-2 text-center">No</TableHead>
+              <TableHead className="w-[40px] p-2 text-center">No</TableHead>
               <TableHead className="p-2">Driver</TableHead>
-              <TableHead className="text-right p-2">Time</TableHead>
+              <TableHead className="w-[100px] text-right p-2">Time</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {data.map((item, index) => (
             <TableRow key={index}>
-                <TableCell className="p-2 text-center align-top">
-                  <div className="font-bold text-lg">{item.rank}</div>
-                  <div className="text-sm text-muted-foreground">#{item.door_no}</div>
+                <TableCell className="p-2 text-center font-bold text-lg align-top">
+                  {item.rank}
                 </TableCell>
                 <TableCell className="p-2 align-top">
-                  <div className="font-bold">{`${item.driver_name} ${item.driver_surname}`}</div>
-                  <div className="font-medium">{`${item.codriver_name} ${item.codriver_surname}`}</div>
-                  <div className="text-xs text-muted-foreground/80">{item.car_brand}</div>
+                  <div className="font-bold">{`${item.driver_surname.toUpperCase()}`}</div>
+                  <div className="text-xs text-muted-foreground/80">#{item.door_no} {item.car_brand}</div>
                 </TableCell>
                 <TableCell className="p-2 text-right font-mono text-sm sm:text-base align-top">
                     <div>{type === 'stage' ? (item as StageResult).stage_time : (item as OverallResult).total_time}</div>
                     <div className="text-xs text-muted-foreground">
-                        <div>{item.diff_to_previous}</div>
-                        <div>{item.diff_to_leader}</div>
+                        {type === 'stage' ? item.diff_to_leader : item.diff_to_previous}
                     </div>
-                     {type === 'overall' && (item as OverallResult).penalty_time !== '00:00.0' && <div className="text-xs text-destructive">P: {(item as OverallResult).penalty_time}</div>}
+                     {type === 'overall' && (item as OverallResult).penalty_time && (item as OverallResult).penalty_time !== '00:00.0' && <div className="text-xs text-destructive">P: {(item as OverallResult).penalty_time}</div>}
                 </TableCell>
             </TableRow>
             ))}
@@ -289,15 +286,15 @@ const ResultsTableSkeleton = () => {
     return (
         <div className="p-4 space-y-4">
             {[...Array(10)].map((_, i) => (
-                <div key={i} className="flex items-center space-x-4">
+                <div key={i} className="flex items-start space-x-4">
                     <Skeleton className="h-10 w-10" />
                     <div className="space-y-2 flex-1">
-                        <Skeleton className="h-4 w-3/4" />
+                        <Skeleton className="h-5 w-3/4" />
                         <Skeleton className="h-4 w-1/2" />
                     </div>
-                     <div className="space-y-2">
-                        <Skeleton className="h-4 w-16" />
-                        <Skeleton className="h-4 w-12" />
+                     <div className="space-y-2 text-right">
+                        <Skeleton className="h-5 w-16 ml-auto" />
+                        <Skeleton className="h-4 w-12 ml-auto" />
                     </div>
                 </div>
             ))}
