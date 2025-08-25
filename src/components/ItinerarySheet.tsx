@@ -11,7 +11,7 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { List, Calendar, Clock, Route, Flag, Users, Wrench, FlagCheckered } from 'lucide-react';
+import { List, Flag, Users, Wrench, CheckeredFlag } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import type { ItineraryItem } from '@/lib/types';
 import { Skeleton } from './ui/skeleton';
@@ -22,7 +22,7 @@ const iconMap: { [key: string]: React.ElementType } = {
     'fa-solid fa-flag': Flag,
     'fa-solid fa-users': Users,
     'fa-solid fa-wrench': Wrench,
-    'fa-solid fa-flag-checkered': FlagCheckered,
+    'fa-solid fa-flag-checkered': CheckeredFlag,
 };
 
 const ItineraryRowIcon = ({ icon, stageNo }: { icon: string; stageNo: string }) => {
