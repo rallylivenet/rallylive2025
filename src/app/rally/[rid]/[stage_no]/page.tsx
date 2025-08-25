@@ -17,7 +17,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import type { StageResult, OverallResult, RallyCategory, ItineraryItem } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
-import { ArrowLeft, Sparkles, Filter, Users, Flag, Share2, X, MessageSquareQuestion } from 'lucide-react';
+import { ArrowLeft, Sparkles, Filter, Users, Flag, Share2, X, MessageCircleQuestion } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { summarizeStageResults } from '@/ai/flows/summarize-stage-results';
 import {

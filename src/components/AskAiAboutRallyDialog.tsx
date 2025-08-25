@@ -13,7 +13,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Bot, MessageSquareQuestion, Send, Sparkles, User, X } from 'lucide-react';
+import { Bot, MessageCircleQuestion, Send, Sparkles, User, X } from 'lucide-react';
 import { askAiAction } from '@/app/actions';
 import { Skeleton } from './ui/skeleton';
 import ReactMarkdown from 'react-markdown';
@@ -81,7 +81,7 @@ export default function AskAiAboutRallyDialog({ rid, stage_no, rallyName, stageN
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button variant="outline" size="sm" className="h-9 px-3">
-          <MessageSquareQuestion className="h-4 w-4 md:mr-2" />
+          <MessageCircleQuestion className="h-4 w-4 md:mr-2" />
           <span className="hidden md:inline">Ask AI</span>
         </Button>
       </DialogTrigger>
