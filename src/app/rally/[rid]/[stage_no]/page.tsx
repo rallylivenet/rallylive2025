@@ -53,7 +53,7 @@ export default function RallyStagePage() {
         const overallResultsData: OverallResult[] = await overallResultsResponse.json();
         const stageNameData = await stageNameResponse.json();
         
-        const currentStageInfo = stageNameData.etaplar.find((e: any) => e.no === stage_no);
+        const currentStageInfo = stageNameData?.etaplar?.find((e: any) => e.no === stage_no);
         setStageName(currentStageInfo ? `SS${stage_no} ${currentStageInfo.name}` : `Stage ${stage_no}`);
         
         setStageResults(stageResultsData);
