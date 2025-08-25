@@ -112,6 +112,12 @@ export default function NavigationMenu() {
             <span>Calendar</span>
           </DropdownMenuItem>
         </Link>
+         <Link href="/push" passHref>
+          <DropdownMenuItem>
+            <Bell className="mr-2 h-4 w-4" />
+            <span>Notifications</span>
+          </DropdownMenuItem>
+        </Link>
         <Link href="/impressum" passHref>
           <DropdownMenuItem>
             <FileText className="mr-2 h-4 w-4" />
@@ -119,12 +125,6 @@ export default function NavigationMenu() {
           </DropdownMenuItem>
         </Link>
         <DropdownMenuSeparator />
-        <Link href="/push" passHref>
-          <DropdownMenuItem>
-            <Bell className="mr-2 h-4 w-4" />
-            <span>Notifications</span>
-          </DropdownMenuItem>
-        </Link>
         <Link href="/login" passHref>
           <DropdownMenuItem>
             <LogIn className="mr-2 h-4 w-4" />
