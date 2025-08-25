@@ -22,12 +22,11 @@ const AdMob = ({ adSlot }: AdMobProps) => {
     } catch (err) {
       console.error("adsbygoogle.push() error:", err);
     }
-  }, []);
+  }, [adSlot]);
 
   return (
-    <div>
+    <div key={adSlot}>
         <ins
-        key={adSlot}
         className="adsbygoogle"
         style={{ display: 'block', width: '100%' }}
         data-ad-client="ca-pub-3358665652492622"
