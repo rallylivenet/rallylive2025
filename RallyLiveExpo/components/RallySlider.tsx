@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Dimensions,
   Alert,
+  Image,
 } from 'react-native';
 import {
   Card,
@@ -16,8 +17,6 @@ import {
   Surface,
   Text,
 } from 'react-native-paper';
-import { Image } from 'expo-image';
-import { router } from 'expo-router';
 import { Rally } from '../types/rally';
 
 const { width } = Dimensions.get('window');
@@ -72,7 +71,6 @@ export function RallySlider() {
           id: rally.rid,
           name: rally.title,
           image: rally.thumbnail,
-          imageHint: 'rally car action',
           lastStage: lastStageData,
           date: rally.date,
         };
@@ -85,13 +83,6 @@ export function RallySlider() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleRallyPress = (rally: Rally) => {
-    const resultsLink = rally.lastStage.number !== '0' 
-      ? `/rally/${rally.id}/${rally.lastStage.number}` 
-      : `/rally/${rally.id}/1`;
-    router.push(resultsLink);
   };
 
   if (loading) {
@@ -121,20 +112,19 @@ export function RallySlider() {
         snapToInterval={CARD_WIDTH + 16}
         contentContainerStyle={styles.scrollContainer}
       >
-        {rallies.map((rally, index) => {
+        {rallies.map((rally) => {
           const isUpcoming = rally.lastStage.number === '0';
           
           return (
             <Card
               key={rally.id}
               style={[styles.rallyCard, { width: CARD_WIDTH }]}
-              onPress={() => handleRallyPress(rally)}
             >
               <View style={styles.imageContainer}>
                 <Image
                   source={{ uri: rally.image || 'https://placehold.co/720x380.png' }}
                   style={styles.rallyImage}
-                  contentFit="cover"
+                  resizeMode="cover"
                 />
                 <View style={styles.imageOverlay} />
                 <View style={styles.imageContent}>
@@ -177,7 +167,6 @@ export function RallySlider() {
 
                 <Button
                   mode="contained"
-                  onPress={() => handleRallyPress(rally)}
                   style={styles.viewButton}
                 >
                   View Results

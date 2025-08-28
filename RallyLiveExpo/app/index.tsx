@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   ScrollView,
@@ -12,11 +12,8 @@ import {
   Title,
   Paragraph,
   Button,
-  ActivityIndicator,
-  Chip,
   Surface,
 } from 'react-native-paper';
-import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { RallySlider } from '../components/RallySlider';
 import { LiveRallies } from '../components/LiveRallies';
@@ -29,7 +26,6 @@ export default function HomeScreen() {
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
-    // Simulate refresh
     setTimeout(() => {
       setRefreshing(false);
     }, 2000);

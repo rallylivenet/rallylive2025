@@ -2,7 +2,6 @@ export interface Rally {
   id: string;
   name: string;
   image: string;
-  imageHint: string;
   lastStage: {
     name: string;
     distance: string;
@@ -21,13 +20,9 @@ export interface StageResult {
   driver_flag: string;
   codriver_name: string;
   codriver_surname: string;
-  codriver_flag: string;
   car_brand: string;
   car_version: string;
-  team_name: string;
-  racing_class: string;
   stage_time: string;
-  stage_time_ms: number;
   diff_to_leader: string;
   diff_to_previous: string;
 }
@@ -40,13 +35,9 @@ export interface OverallResult {
   driver_flag: string;
   codriver_name: string;
   codriver_surname: string;
-  codriver_flag: string;
   car_brand: string;
   car_version: string;
-  team_name: string;
-  racing_class: string;
   total_time: string;
-  tSure: string;
   penalty_time: string;
   diff_to_leader: string;
   diff_to_previous: string;
@@ -57,7 +48,25 @@ export interface RallyEvent {
   RalliAdi: string;
   Tarih: string;
   Link: string;
-  ridFlag?: string | null;
   sonEtap?: string | null;
-  leftStage?: number | null;
+}
+
+export interface Post {
+  id: number;
+  link: string;
+  title: {
+    rendered: string;
+  };
+  excerpt: {
+    rendered: string;
+  };
+  date: string;
+  featured_media: number;
+  _embedded?: {
+    'wp:featuredmedia'?: {
+      id: number;
+      source_url: string;
+      alt_text: string;
+    }[];
+  }
 }

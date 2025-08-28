@@ -12,13 +12,11 @@ import {
   Surface,
   Text,
 } from 'react-native-paper';
-import { router } from 'expo-router';
 
 interface LiveRally {
   id: string;
   name: string;
   status: 'Live' | 'Finished' | 'Upcoming';
-  link: string;
 }
 
 export function LiveRallies() {
@@ -39,7 +37,6 @@ export function LiveRallies() {
       const data = await response.json();
       const mappedRallies = await Promise.all(data.map(async (rally: any) => {
         let status: LiveRally['status'] = 'Upcoming';
-        let link = `/rally/${rally.rid}`;
 
         if (rally.rid) {
           try {
@@ -47,7 +44,6 @@ export function LiveRallies() {
             if (stageResponse.ok) {
               const stageData = await stageResponse.json();
               if (stageData && stageData.sonEtap && stageData.sonEtap !== '0') {
-                link = `/rally/${rally.rid}/${stageData.sonEtap}`;
                 status = 'Live';
               }
             }
@@ -60,7 +56,6 @@ export function LiveRallies() {
           id: rally.rid,
           name: rally.title,
           status,
-          link,
         };
       }));
 
@@ -71,10 +66,6 @@ export function LiveRallies() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleRallyPress = (rally: LiveRally) => {
-    router.push(rally.link);
   };
 
   return (
@@ -94,7 +85,6 @@ export function LiveRallies() {
                 <Surface
                   key={rally.id}
                   style={styles.rallyItem}
-                  onTouchEnd={() => handleRallyPress(rally)}
                 >
                   <View style={styles.rallyContent}>
                     <Text style={styles.rallyName} numberOfLines={2}>

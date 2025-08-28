@@ -4,36 +4,17 @@ import {
   StyleSheet,
   Alert,
   Linking,
+  Image,
 } from 'react-native';
 import {
   Card,
   Title,
-  Paragraph,
   Button,
   ActivityIndicator,
   Surface,
   Text,
 } from 'react-native-paper';
-import { Image } from 'expo-image';
-
-interface Post {
-  id: number;
-  link: string;
-  title: {
-    rendered: string;
-  };
-  excerpt: {
-    rendered: string;
-  };
-  date: string;
-  _embedded?: {
-    'wp:featuredmedia'?: {
-      id: number;
-      source_url: string;
-      alt_text: string;
-    }[];
-  };
-}
+import { Post } from '../types/rally';
 
 export function RallyNews() {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -99,14 +80,13 @@ export function RallyNews() {
               <Surface
                 key={post.id}
                 style={styles.newsItem}
-                onTouchEnd={() => handlePostPress(post)}
               >
                 <View style={styles.newsContent}>
                   {featuredMedia && (
                     <Image
                       source={{ uri: featuredMedia.source_url }}
                       style={styles.newsImage}
-                      contentFit="cover"
+                      resizeMode="cover"
                     />
                   )}
                   

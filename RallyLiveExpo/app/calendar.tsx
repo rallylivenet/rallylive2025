@@ -75,9 +75,6 @@ export default function CalendarScreen() {
   const upcomingEvents = events.filter(event => new Date(event.Tarih) >= today);
   const pastEvents = events.filter(event => new Date(event.Tarih) < today);
 
-  const isCurrentMonth = selectedDate.getFullYear() === today.getFullYear() && 
-                         selectedDate.getMonth() === today.getMonth();
-
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -108,126 +105,65 @@ export default function CalendarScreen() {
           </Button>
         </Surface>
 
-        {/* Month Navigation */}
-        <Surface style={styles.monthNavigation}>
-          <Button
-            mode="outlined"
-            onPress={() => {
-              const newDate = new Date(selectedDate);
-              newDate.setMonth(newDate.getMonth() - 1);
-              setSelectedDate(newDate);
-            }}
-          >
-            ← Previous
-          </Button>
-          
-          <Title style={styles.monthTitle}>
-            {selectedDate.toLocaleDateString('en-US', { 
-              month: 'long', 
-              year: 'numeric' 
-            })}
-          </Title>
-          
-          <Button
-            mode="outlined"
-            onPress={() => {
-              const newDate = new Date(selectedDate);
-              newDate.setMonth(newDate.getMonth() + 1);
-              setSelectedDate(newDate);
-            }}
-          >
-            Next →
-          </Button>
-        </Surface>
-
         {/* Events List */}
         {events.length > 0 ? (
-          isCurrentMonth ? (
-            <View style={styles.eventsContainer}>
-              {/* Upcoming Events */}
-              {upcomingEvents.length > 0 && (
-                <View style={styles.eventSection}>
-                  <Title style={styles.sectionTitle}>🏁 Upcoming Rallies</Title>
-                  {upcomingEvents.map((event, index) => (
-                    <Card
-                      key={event.id || event.Link || index}
-                      style={styles.eventCard}
-                      onPress={() => handleEventPress(event)}
-                    >
-                      <Card.Content>
-                        <View style={styles.eventContent}>
-                          <View style={styles.eventInfo}>
-                            <Title style={styles.eventTitle}>{event.RalliAdi}</Title>
-                            <Paragraph style={styles.eventDate}>
-                              {new Date(event.Tarih).toLocaleDateString()}
-                            </Paragraph>
-                          </View>
-                          <Chip mode="outlined" textStyle={styles.chipText}>
-                            Upcoming
-                          </Chip>
+          <View style={styles.eventsContainer}>
+            {/* Upcoming Events */}
+            {upcomingEvents.length > 0 && (
+              <View style={styles.eventSection}>
+                <Title style={styles.sectionTitle}>🏁 Upcoming Rallies</Title>
+                {upcomingEvents.map((event, index) => (
+                  <Card
+                    key={event.id || event.Link || index}
+                    style={styles.eventCard}
+                    onPress={() => handleEventPress(event)}
+                  >
+                    <Card.Content>
+                      <View style={styles.eventContent}>
+                        <View style={styles.eventInfo}>
+                          <Title style={styles.eventTitle}>{event.RalliAdi}</Title>
+                          <Paragraph style={styles.eventDate}>
+                            {new Date(event.Tarih).toLocaleDateString()}
+                          </Paragraph>
                         </View>
-                      </Card.Content>
-                    </Card>
-                  ))}
-                </View>
-              )}
-
-              {/* Past Events */}
-              {pastEvents.length > 0 && (
-                <View style={styles.eventSection}>
-                  <Title style={styles.sectionTitle}>📚 Past Rallies</Title>
-                  {pastEvents.map((event, index) => (
-                    <Card
-                      key={event.id || event.Link || index}
-                      style={styles.eventCard}
-                      onPress={() => handleEventPress(event)}
-                    >
-                      <Card.Content>
-                        <View style={styles.eventContent}>
-                          <View style={styles.eventInfo}>
-                            <Title style={styles.eventTitle}>{event.RalliAdi}</Title>
-                            <Paragraph style={styles.eventDate}>
-                              {new Date(event.Tarih).toLocaleDateString()}
-                            </Paragraph>
-                          </View>
-                          <Chip mode="outlined" textStyle={styles.chipText}>
-                            Finished
-                          </Chip>
-                        </View>
-                      </Card.Content>
-                    </Card>
-                  ))}
-                </View>
-              )}
-            </View>
-          ) : (
-            <View style={styles.eventSection}>
-              <Title style={styles.sectionTitle}>
-                Events for {selectedDate.toLocaleDateString('en-US', { 
-                  month: 'long', 
-                  year: 'numeric' 
-                })}
-              </Title>
-              {events.map((event, index) => (
-                <Card
-                  key={event.id || event.Link || index}
-                  style={styles.eventCard}
-                  onPress={() => handleEventPress(event)}
-                >
-                  <Card.Content>
-                    <View style={styles.eventContent}>
-                      <View style={styles.eventInfo}>
-                        <Title style={styles.eventTitle}>{event.RalliAdi}</Title>
-                        <Paragraph style={styles.eventDate}>
-                          {new Date(event.Tarih).toLocaleDateString()}
-                        </Paragraph>
+                        <Chip mode="outlined" textStyle={styles.chipText}>
+                          Upcoming
+                        </Chip>
                       </View>
-                    </View>
-                  </Card.Content>
-                </Card>
-              ))}
-            </View>
-          )
+                    </Card.Content>
+                  </Card>
+                ))}
+              </View>
+            )}
+
+            {/* Past Events */}
+            {pastEvents.length > 0 && (
+              <View style={styles.eventSection}>
+                <Title style={styles.sectionTitle}>📚 Past Rallies</Title>
+                {pastEvents.map((event, index) => (
+                  <Card
+                    key={event.id || event.Link || index}
+                    style={styles.eventCard}
+                    onPress={() => handleEventPress(event)}
+                  >
+                    <Card.Content>
+                      <View style={styles.eventContent}>
+                        <View style={styles.eventInfo}>
+                          <Title style={styles.eventTitle}>{event.RalliAdi}</Title>
+                          <Paragraph style={styles.eventDate}>
+                            {new Date(event.Tarih).toLocaleDateString()}
+                          </Paragraph>
+                        </View>
+                        <Chip mode="outlined" textStyle={styles.chipText}>
+                          Finished
+                        </Chip>
+                      </View>
+                    </Card.Content>
+                  </Card>
+                ))}
+              </View>
+            )}
+          </View>
         ) : (
           <Surface style={styles.emptyState}>
             <Text style={styles.emptyStateText}>📅</Text>
@@ -274,19 +210,6 @@ const styles = StyleSheet.create({
   backButton: {
     alignSelf: 'flex-start',
     marginTop: 8,
-  },
-  monthNavigation: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 16,
-    marginBottom: 16,
-    borderRadius: 12,
-    elevation: 2,
-  },
-  monthTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
   },
   eventsContainer: {
     gap: 24,

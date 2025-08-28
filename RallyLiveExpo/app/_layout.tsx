@@ -26,7 +26,6 @@ export default function RootLayout() {
             headerTintColor: '#FFFFFF',
             headerTitleStyle: {
               fontWeight: 'bold',
-              fontFamily: 'SpaceGrotesk-Bold',
             },
           }}
         >

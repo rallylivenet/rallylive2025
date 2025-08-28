@@ -1,23 +1,27 @@
 import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
-import { PaperProvider } from 'react-native-paper';
-import HomeScreen from './app/index';
+import { StatusBar } from 'expo-status-bar';
+import { PaperProvider, MD3LightTheme } from 'react-native-paper';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import HomeScreen from './screens/HomeScreen';
 
-const Stack = createStackNavigator();
+const theme = {
+  ...MD3LightTheme,
+  colors: {
+    ...MD3LightTheme.colors,
+    primary: '#1E3A8A',
+    secondary: '#DC2626',
+    surface: '#F5F5F5',
+    background: '#FFFFFF',
+  },
+};
 
 export default function App() {
   return (
-    <PaperProvider>
-      <NavigationContainer>
-        <Stack.Navigator initialRouteName="Home">
-          <Stack.Screen 
-            name="Home" 
-            component={HomeScreen}
-            options={{ title: 'RallyLive Net' }}
-          />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </PaperProvider>
+    <SafeAreaProvider>
+      <PaperProvider theme={theme}>
+        <HomeScreen />
+        <StatusBar style="light" backgroundColor="#1E3A8A" />
+      </PaperProvider>
+    </SafeAreaProvider>
   );
 }
