@@ -13,6 +13,24 @@ import Countdown from '@/components/Countdown';
 import type { RallyFromApi, LastStageFromApi } from '@/lib/types';
 
 
+export async function generateStaticParams() {
+    try {
+        const response = await fetch('https://www.rallylive.net/wp-json/rally/v1/live-results?limit=15');
+        if (!response.ok) {
+            console.error("Failed to fetch rallies for static generation");
+            return [];
+        }
+        const rallies: RallyFromApi[] = await response.json();
+        return rallies.map((rally) => ({
+            rid: rally.rid,
+        }));
+    } catch (error) {
+        console.error("Error in generateStaticParams for rallies:", error);
+        return [];
+    }
+}
+
+
 export default function RallyPage() {
     const params = useParams();
     const rid = params.rid as string;

@@ -12,6 +12,25 @@ import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import NavigationMenu from '@/components/NavigationMenu';
 
+// This function is required for static export
+export async function generateStaticParams() {
+    try {
+        const response = await fetch('https://rallylive.net/wp-json/wp/v2/posts?per_page=20&_embed');
+        if (!response.ok) {
+            console.error("Failed to fetch posts for static generation");
+            return [];
+        }
+        const posts: Post[] = await response.json();
+        return posts.map((post) => ({
+            id: String(post.id),
+        }));
+    } catch (error) {
+        console.error("Error in generateStaticParams for posts:", error);
+        return [];
+    }
+}
+
+
 export default function PostPage() {
     const params = useParams();
     const id = params.id as string;

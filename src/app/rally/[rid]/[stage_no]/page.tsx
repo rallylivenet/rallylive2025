@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import type { StageResult, OverallResult, RallyCategory, ItineraryItem } from '@/lib/types';
+import type { StageResult, OverallResult, RallyCategory, ItineraryItem, RallyFromApi } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { ArrowLeft, Sparkles, Filter, Users, Flag, Share2, X, MessageCircleQuestion, LogIn } from 'lucide-react';
@@ -30,6 +30,45 @@ import {
 import ItinerarySheet from '@/components/ItinerarySheet';
 import NavigationMenu from '@/components/NavigationMenu';
 import AskAiAboutRallyDialog from '@/components/AskAiAboutRallyDialog';
+
+export async function generateStaticParams() {
+    try {
+        const response = await fetch('https://www.rallylive.net/wp-json/rally/v1/live-results?limit=15');
+        if (!response.ok) {
+            console.error("Failed to fetch rallies for static generation");
+            return [];
+        }
+        const rallies: RallyFromApi[] = await response.json();
+        
+        const allRallyStages = await Promise.all(rallies.map(async (rally) => {
+            try {
+                const itineraryResponse = await fetch(`https://www.rallylive.net/mobileapp/v1/rally-itinerary.php?rid=${rally.rid}`);
+                 if (!itineraryResponse.ok) {
+                    return [];
+                }
+                const itinerary: ItineraryItem[] = await itineraryResponse.json();
+
+                return itinerary
+                    .filter(item => parseInt(item.no, 10) > 0) // Only return actual stages
+                    .map(stage => ({
+                        rid: rally.rid,
+                        stage_no: stage.no,
+                    }));
+
+            } catch (error) {
+                 console.error(`Failed to fetch itinerary for rally ${rally.rid}`, error);
+                 return [];
+            }
+        }));
+
+        return allRallyStages.flat();
+
+    } catch (error) {
+        console.error("Error in generateStaticParams for rally stages:", error);
+        return [];
+    }
+}
+
 
 export default function RallyStagePage() {
   const params = useParams();
