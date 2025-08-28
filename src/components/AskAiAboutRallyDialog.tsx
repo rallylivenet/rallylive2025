@@ -14,11 +14,9 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Bot, MessageCircleQuestion, Send, Sparkles, User, X, LogIn } from 'lucide-react';
-import { askAiAction } from '@/app/actions';
 import { Skeleton } from './ui/skeleton';
 import ReactMarkdown from 'react-markdown';
 import { Card, CardContent } from './ui/card';
-import type { AskAiAboutRallyFormValues } from '@/lib/types';
 import Link from 'next/link';
 
 interface AskAiAboutRallyDialogProps {
@@ -41,7 +39,6 @@ export default function AskAiAboutRallyDialog({ rid, stage_no, rallyName, stageN
   const [messages, setMessages] = React.useState<Message[]>([]);
   const scrollRef = React.useRef<HTMLDivElement>(null);
   
-  // TODO: Replace with a real authentication check
   const [isLoggedIn, setIsLoggedIn] = React.useState(true);
 
   React.useEffect(() => {
@@ -63,17 +60,27 @@ export default function AskAiAboutRallyDialog({ rid, stage_no, rallyName, stageN
         return;
     }
 
-
     setIsAsking(true);
     setMessages(prev => [...prev, {role: 'user', content: question}]);
     
     try {
-      const result = await askAiAction({ question }, { rid, stage_no, stageName });
-      if (result.success && result.answer) {
+      const response = await fetch('/api/ask-rally-question', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question, rid, stage_no, stageName }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'An unexpected error occurred.');
+      }
+
+      if (result.answer) {
         setMessages(prev => [...prev, {role: 'assistant', content: result.answer!}]);
         setQuestion('');
       } else {
-        throw new Error(result.error || 'Failed to get an answer from the AI.');
+        throw new Error('Failed to get an answer from the AI.');
       }
     } catch (error: any) {
       console.error(error);

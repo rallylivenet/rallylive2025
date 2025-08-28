@@ -2,10 +2,9 @@
 'use client';
 
 import * as React from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { generatePushNotification } from './actions';
-import { AdminPushFormSchema, type AdminPushFormValues } from '@/lib/types';
+import { AdminPushFormSchema, type AdminPushFormValues, type RallyUpdateInput } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -17,7 +16,7 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from '@/hooks/use-toast';
 import { Sparkles, Send, Bot } from 'lucide-react';
 import Link from 'next/link';
@@ -47,16 +46,63 @@ export default function AdminPushPage() {
   async function onSubmit(data: AdminPushFormValues) {
     setIsSubmitting(true);
     setGeneratedNotification('');
+    
+    const {
+      rallyName,
+      stageName,
+      updateType,
+      stageWinnerDriver,
+      stageWinnerTime,
+      overallLeaderDriver,
+      overallLeaderLead,
+      breakingNews,
+    } = data;
+
+    const flowInput: RallyUpdateInput = {
+      rallyName,
+      stageName,
+      updateType,
+    };
+
+    if (updateType === 'stage_winner' && stageWinnerDriver && stageWinnerTime) {
+      flowInput.stageWinner = {
+        driverName: stageWinnerDriver,
+        time: stageWinnerTime,
+      };
+    }
+
+    if (updateType === 'overall_leader_change' && overallLeaderDriver && overallLeaderLead) {
+      flowInput.overallLeader = {
+        driverName: overallLeaderDriver,
+        leadBy: overallLeaderLead,
+      };
+    }
+
+    if (updateType === 'breaking_news' && breakingNews) {
+      flowInput.breakingNews = breakingNews;
+    }
+
     try {
-      const result = await generatePushNotification(data);
-      if (result.success && result.notification) {
+      const response = await fetch('/api/generate-push', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(flowInput),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'An unexpected error occurred.');
+      }
+      
+      if (result.notification) {
         setGeneratedNotification(result.notification);
         toast({
           title: 'Notification Generated',
           description: 'The notification message has been created successfully.',
         });
       } else {
-        throw new Error(result.error || 'Failed to generate notification.');
+        throw new Error('Failed to generate notification.');
       }
     } catch (error: any) {
       console.error(error);
