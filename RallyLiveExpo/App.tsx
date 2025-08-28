@@ -1,10 +1,12 @@
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
 
 export default function App() {
   return (
     <View style={styles.container}>
-      <Text>RallyLive Net</Text>
+      <Text style={styles.title}>RallyLive Net</Text>
+      <Text style={styles.subtitle}>Mobile Rally Tracking</Text>
       <StatusBar style="auto" />
     </View>
   );
@@ -16,5 +18,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 8,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#666',
   },
 });
