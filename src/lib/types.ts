@@ -197,3 +197,16 @@ export const AskAiAboutRallyFormSchema = z.object({
     question: z.string().min(1, 'Please enter a question.'),
 });
 export type AskAiAboutRallyFormValues = z.infer<typeof AskAiAboutRallyFormSchema>;
+
+
+export interface RallyData {
+  stageResults: StageResult[];
+  overallResults: OverallResult[];
+  stageName: string;
+  rallyName: string;
+  categories: RallyCategory[];
+  initialParams: {
+      rid: string;
+      stage_no: string;
+  }
+}
