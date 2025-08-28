@@ -81,7 +81,7 @@ export default function RallySlider() {
     const [summarizing, setSummarizing] = React.useState<{[key: string]: boolean}>({});
   
   // TODO: Replace with a real authentication check
-  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+  const [isLoggedIn, setIsLoggedIn] = React.useState(true);
 
 
   const handleShareSummary = async (rally: Rally, summary: string) => {

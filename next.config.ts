@@ -22,6 +22,11 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'rallylive.net',
         pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.rallylive.net',
+        pathname: '/**',
       }
     ],
   },

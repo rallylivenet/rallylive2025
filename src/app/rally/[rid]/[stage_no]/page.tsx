@@ -46,7 +46,7 @@ export default function RallyStagePage() {
   const [isSummarizing, setIsSummarizing] = React.useState(false);
   const [categories, setCategories] = React.useState<RallyCategory[]>([]);
   const [selectedClass, setSelectedClass] = React.useState<string>('All');
-  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+  const [isLoggedIn, setIsLoggedIn] = React.useState(true);
 
 
   React.useEffect(() => {

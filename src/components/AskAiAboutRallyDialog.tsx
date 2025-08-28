@@ -42,7 +42,7 @@ export default function AskAiAboutRallyDialog({ rid, stage_no, rallyName, stageN
   const scrollRef = React.useRef<HTMLDivElement>(null);
   
   // TODO: Replace with a real authentication check
-  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+  const [isLoggedIn, setIsLoggedIn] = React.useState(true);
 
   React.useEffect(() => {
     if (scrollRef.current) {
